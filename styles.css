@@ -1,0 +1,489 @@
+/* Paleta principal basada en el turquesa del logo. */
+:root {
+    --color-logo: #1594a3;
+    --color-logo-dark: #0d6875;
+    --color-coral: #ef7965;
+    --color-ink: #193b46;
+    --color-muted: #627980;
+    --color-background: #f4fbfc;
+    --color-soft-blue: #e5f5f7;
+    --color-white: #ffffff;
+    --shadow-soft: 0 16px 36px rgba(25, 59, 70, 0.1);
+}
+
+/* Restablece medidas para que el diseño sea predecible. */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background: var(--color-background);
+    color: var(--color-ink);
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    line-height: 1.6;
+}
+
+/* Contenedor común para centrar el contenido. */
+.container {
+    margin: 0 auto;
+    max-width: 1160px;
+    padding: 0 24px;
+}
+
+/* Barra de navegación principal. */
+.site-header {
+    background: rgba(244, 251, 252, 0.94);
+    border-bottom: 1px solid #d3edf0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.nav-wrapper {
+    align-items: center;
+    display: flex;
+    gap: 24px;
+    justify-content: space-between;
+    min-height: 78px;
+}
+
+.brand {
+    align-items: center;
+    color: var(--color-ink);
+    display: inline-flex;
+    font-size: 1.2rem;
+    font-weight: bold;
+    gap: 11px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.brand strong {
+    color: var(--color-logo);
+}
+
+.brand-logo {
+    border-radius: 13px;
+    height: 44px;
+    object-fit: cover;
+    width: 44px;
+}
+
+.main-nav {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: flex-end;
+}
+
+.main-nav a {
+    border-radius: 999px;
+    color: var(--color-ink);
+    font-size: 0.92rem;
+    padding: 9px 13px;
+    text-decoration: none;
+    transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.main-nav a:hover,
+.main-nav a:focus-visible {
+    background: var(--color-soft-blue);
+    color: var(--color-logo-dark);
+    transform: translateY(-2px);
+}
+
+.nav-contact {
+    background: var(--color-logo);
+    color: var(--color-white) !important;
+    font-weight: bold;
+    margin-left: 8px;
+    padding: 10px 16px !important;
+}
+
+.nav-contact:hover,
+.nav-contact:focus-visible {
+    background: var(--color-logo-dark) !important;
+    color: var(--color-white) !important;
+}
+
+/* Presentación principal con un fondo luminoso relacionado al logo. */
+.hero {
+    background: radial-gradient(circle at 86% 18%, #c7eef1 0, transparent 25%), linear-gradient(135deg, #e3f7f8 0%, var(--color-background) 62%);
+    overflow: hidden;
+    padding: 106px 0 116px;
+    position: relative;
+}
+
+
+
+.hero-content {
+    max-width: 720px;
+    position: relative;
+    z-index: 1;
+}
+
+.eyebrow {
+    color: var(--color-logo-dark);
+    font-size: 0.76rem;
+    font-weight: bold;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+}
+
+h1,
+h2,
+h3 {
+    line-height: 1.12;
+}
+
+h1 {
+    color: var(--color-ink);
+    font-size: clamp(2.7rem, 6vw, 5.2rem);
+    letter-spacing: -0.02em;
+    margin: 16px 0 22px;
+    max-width: 700px;
+}
+
+h2 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: 16px;
+}
+
+.hero p {
+    color: var(--color-muted);
+    font-size: 1.1rem;
+    max-width: 590px;
+}
+
+.button {
+    background: var(--color-coral);
+    border: 0;
+    border-radius: 999px;
+    box-shadow: 0 9px 18px rgba(239, 121, 101, 0.22);
+    color: var(--color-white);
+    cursor: pointer;
+    display: inline-block;
+    font: inherit;
+    font-weight: bold;
+    margin-top: 30px;
+    padding: 14px 21px;
+    text-decoration: none;
+    transition: background-color 180ms ease, transform 180ms ease;
+}
+
+.button:hover,
+.button:focus-visible {
+    background: #d9604d;
+    transform: translateY(-2px);
+}
+
+/* Secciones de contenido de la página principal. */
+.section {
+    padding: 88px 0;
+}
+
+.section-heading {
+    margin-bottom: 34px;
+    max-width: 650px;
+}
+
+.section-heading p,
+.about-copy p {
+    color: var(--color-muted);
+}
+
+.featured-grid {
+    display: grid;
+    gap: 22px;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.service-card {
+    background: var(--color-white);
+    border: 1px solid #d2edf0;
+    border-radius: 18px;
+    box-shadow: var(--shadow-soft);
+    padding: 28px;
+    transition: box-shadow 180ms ease, transform 180ms ease;
+}
+
+.service-card:hover {
+    box-shadow: 0 20px 42px rgba(25, 59, 70, 0.15);
+    transform: translateY(-5px);
+}
+
+.service-icon {
+    align-items: center;
+    background: var(--color-logo);
+    border: 5px solid #c9eef1;
+    border-radius: 18px;
+    display: flex;
+    font-size: 2.6rem;
+    height: 78px;
+    justify-content: center;
+    margin-bottom: 22px;
+    width: 78px;
+}
+
+.service-category,
+.service-details strong,
+.service-link {
+    color: var(--color-logo-dark);
+}
+
+.service-category {
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.service-card h3 {
+    font-size: 1.35rem;
+    margin: 8px 0;
+}
+
+.service-card>p:not(.service-category) {
+    color: var(--color-muted);
+    min-height: 52px;
+}
+
+.service-details {
+    align-items: center;
+    border-top: 1px solid #e2f0f1;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 22px;
+    padding-top: 16px;
+}
+
+.service-link {
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.service-link:hover,
+.service-link:focus-visible {
+    color: var(--color-coral);
+}
+
+/* Catálogo de vacunas. */
+.vaccine-section {
+    background: var(--color-soft-blue);
+}
+
+.vaccine-grid {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.vaccine-card {
+    background: var(--color-white);
+    border: 1px solid #cae8eb;
+    border-radius: 12px;
+    padding: 23px;
+    transition: border-color 180ms ease, transform 180ms ease;
+}
+
+.vaccine-card:hover {
+    border-color: var(--color-logo);
+    transform: translateY(-3px);
+}
+
+.vaccine-code {
+    color: var(--color-coral);
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+}
+
+.vaccine-card h3 {
+    font-size: 1.15rem;
+    margin: 10px 0 7px;
+}
+
+.vaccine-card p {
+    color: var(--color-muted);
+    font-size: 0.9rem;
+    margin-bottom: 14px;
+}
+
+.vaccine-card strong {
+    color: var(--color-logo-dark);
+}
+
+/* Presentación del equipo. */
+.about-section {
+    background: var(--color-logo-dark);
+    color: var(--color-white);
+}
+
+.about-section .eyebrow {
+    color: #a5e5e8;
+}
+
+.about-copy {
+    max-width: 700px;
+}
+
+.about-copy p {
+    color: #d4eff1;
+    margin-bottom: 14px;
+}
+
+/* Resumen visual de la trayectoria y capacidad de la clínica. */
+.clinic-stats {
+    border-top: 1px solid rgba(212, 239, 241, 0.32);
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 30px;
+    padding-top: 24px;
+}
+
+.clinic-stats--two {
+    grid-template-columns: repeat(2, minmax(180px, 260px));
+}
+
+.clinic-stat strong {
+    color: var(--color-white);
+    display: block;
+    font-size: 1.8rem;
+    line-height: 1;
+}
+
+.clinic-stat span {
+    color: #b9dce0;
+    display: block;
+    font-size: 0.84rem;
+    margin-top: 8px;
+}
+
+/* Contacto y formulario. */
+.contact-layout {
+    display: grid;
+    gap: 30px;
+    grid-template-columns: 1fr 1fr;
+}
+
+.map-frame {
+    border: 0;
+    border-radius: 18px;
+    box-shadow: var(--shadow-soft);
+    height: 100%;
+    min-height: 360px;
+    width: 100%;
+}
+
+.contact-form {
+    background: var(--color-white);
+    border: 1px solid #d2edf0;
+    border-radius: 18px;
+    box-shadow: var(--shadow-soft);
+    padding: 30px;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    color: var(--color-ink);
+    display: block;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 7px;
+}
+
+.form-group input,
+.form-group textarea {
+    background: #fbfefe;
+    border: 1px solid #c9e3e6;
+    border-radius: 9px;
+    color: var(--color-ink);
+    font: inherit;
+    outline: 0;
+    padding: 12px;
+    transition: border-color 180ms ease, box-shadow 180ms ease;
+    width: 100%;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: var(--color-logo);
+    box-shadow: 0 0 0 3px #d8f2f4;
+}
+
+.form-group textarea {
+    min-height: 125px;
+    resize: vertical;
+}
+
+.form-message {
+    color: var(--color-logo-dark);
+    margin-top: 16px;
+}
+
+/* Pie común de la aplicación. */
+.site-footer {
+    background: #12323c;
+    color: var(--color-white);
+    padding: 32px 0;
+    text-align: center;
+}
+
+.site-footer p+p {
+    color: #b9dce0;
+    font-size: 0.9rem;
+    margin-top: 6px;
+}
+
+/* Ajustes para pantallas pequeñas. */
+@media (max-width: 760px) {
+
+    .nav-wrapper,
+    .main-nav {
+        align-items: flex-start;
+    }
+
+    .nav-wrapper {
+        flex-direction: column;
+        padding-bottom: 16px;
+        padding-top: 16px;
+    }
+
+    .main-nav {
+        gap: 4px;
+        justify-content: flex-start;
+    }
+
+    .nav-contact {
+        margin-left: 0;
+    }
+
+    .hero {
+        padding: 76px 0 84px;
+    }
+
+    .featured-grid,
+    .vaccine-grid,
+    .contact-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .clinic-stats {
+        grid-template-columns: repeat(2, minmax(130px, 1fr));
+    }
+
+    .service-card>p:not(.service-category) {
+        min-height: auto;
+    }
+}

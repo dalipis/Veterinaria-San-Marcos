@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Veterinaria San Marcos: servicios, cuidado y bienestar para tus mascotas.">
+    <title>Veterinaria San Marcos</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Navegación principal de la página. -->
+    <header class="site-header">
+        <div class="container nav-wrapper">
+            <a class="brand" href="#inicio">
+                <!-- Logo guardado dentro de la carpeta Imagenes. -->
+                <img class="brand-logo" src="Imagenes/Logo%20veterinaria.png" alt="Logo de Veterinaria San Marcos">
+                <span>Veterinaria <strong>San Marcos</strong></span>
+            </a>
+            <nav class="main-nav" aria-label="Navegación principal">
+                <a href="#servicios">Servicios</a>
+                <a href="#vacunas">Vacunas</a>
+                <a href="#nosotros">Quiénes somos</a>
+                <a class="nav-contact" href="#contacto">Agendar consulta <span aria-hidden="true"></span></a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero: presenta la identidad y el propósito de la veterinaria. -->
+        <section class="hero" id="inicio">
+            <div class="container hero-content">
+                <p class="eyebrow">Desde Rancagua, cuidamos lo que más quieres</p>
+                <h1>Salud y bienestar para cada compañero de vida.</h1>
+                <p>Desde 2009 acompañamos a familias de la Región del Libertador General Bernardo O'Higgins con atención
+                    veterinaria cercana y responsable</p>
+                <a class="button" href="#servicios">Conocer nuestros servicios</a>
+            </div>
+        </section>
+
+        <!-- Servicios destacados tomados del catálogo entregado. -->
+        <section class="section services-section" id="servicios">
+            <div class="container">
+                <div class="section-heading">
+                    <p class="eyebrow">Atención veterinaria</p>
+                    <h2>Servicios para cada etapa</h2>
+                    <p>Conoce algunos de los servicios que ofrecemos para perros, gatos, conejos y aves.</p>
+                </div>
+
+                <div class="featured-grid">
+                    <article class="service-card service-card--mint">
+                        <!-- Cambia el emoji de este bloque para usar otro icono. -->
+                        <div class="service-icon" aria-hidden="true">🩺</div>
+                        <p class="service-category">Consultas</p>
+                        <h3>Consulta general</h3>
+                        <p>Evaluación veterinaria para perros y gatos.</p>
+                        <div class="service-details">
+                            <span>30 min</span>
+                            <strong>$15.000</strong>
+                        </div>
+                    </article>
+                    <article class="service-card service-card--blue">
+                        <!-- Cambia el emoji de este bloque para usar otro icono. -->
+                        <div class="service-icon" aria-hidden="true">💉</div>
+                        <p class="service-category">Vacunación</p>
+                        <h3>Vacunas</h3>
+                        <p>Protección preventiva para perros y gatos en distintas etapas.</p>
+                        <div class="service-details">
+                            <span>Perros y gatos</span>
+                            <a class="service-link" href="#vacunas">Ver catálogo <span aria-hidden="true">→</span></a>
+                        </div>
+                    </article>
+                    <article class="service-card service-card--yellow">
+                        <!-- Cambia el emoji de este bloque para usar otro icono. -->
+                        <div class="service-icon" aria-hidden="true">🛡️</div>
+                        <p class="service-category">Desparasitación</p>
+                        <h3>Desparasitación interna</h3>
+                        <p>Prevención para mantener a tu mascota protegida.</p>
+                        <div class="service-details">
+                            <span>5 min</span>
+                            <strong>Desde $8.000</strong>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Catálogo inicial de vacunas tomado del archivo de servicios. -->
+        <section class="section vaccine-section" id="vacunas">
+            <div class="container">
+                <div class="section-heading">
+                    <p class="eyebrow">Prevención y cuidado</p>
+                    <h2>Catálogo de vacunas</h2>
+                    <p>Selecciona la vacuna adecuada según la especie y las indicaciones de nuestro equipo veterinario.
+                    </p>
+                </div>
+
+                <div class="vaccine-grid">
+                    <article class="vaccine-card">
+                        <span class="vaccine-code">VA001</span>
+                        <h3>Antirrábica canina</h3>
+                        <p>Para perros · 10 min</p>
+                        <strong>$12.000</strong>
+                    </article>
+                    <article class="vaccine-card">
+                        <span class="vaccine-code">VA002</span>
+                        <h3>Séxtuple canina</h3>
+                        <p>Para perros · Refuerzo anual</p>
+                        <strong>$18.000</strong>
+                    </article>
+                    <article class="vaccine-card">
+                        <span class="vaccine-code">VA003</span>
+                        <h3>Bivalente felina</h3>
+                        <p>Para gatos · Refuerzo anual</p>
+                        <strong>$15.000</strong>
+                    </article>
+                    <article class="vaccine-card">
+                        <span class="vaccine-code">VA004</span>
+                        <h3>Triple felina</h3>
+                        <p>Para gatos · Refuerzo anual</p>
+                        <strong>$17.000</strong>
+                    </article>
+                    <article class="vaccine-card">
+                        <span class="vaccine-code">VA005</span>
+                        <h3>Bordetella canina</h3>
+                        <p>Para perros · Tos de las perreras</p>
+                        <strong>$14.000</strong>
+                    </article>
+                    <article class="vaccine-card">
+                        <span class="vaccine-code">VA006</span>
+                        <h3>Antirrábica felina</h3>
+                        <p>Para gatos · 10 min</p>
+                        <strong>$12.000</strong>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Presentación breve del equipo y del propósito del proyecto. -->
+        <section class="section about-section" id="nosotros">
+            <div class="container about-copy">
+                <p class="eyebrow">Nuestra historia</p>
+                <h2>Una clínica cercana, con experiencia y vocación</h2>
+                <p>Veterinaria San Marcos es una clínica ubicada en Rancagua, fundada en 2009 para entregar
+                    atención responsable y cercana a las mascotas y sus familias.</p>
+                <p>Contamos con un equipo formado por 3 médicos veterinarios, 1 técnico veterinario y 1
+                    recepcionista administrativa. Atendemos principalmente perros y gatos, además de conejos y aves, con
+                    servicios de consulta general, vacunación, cirugía menor, desparasitación y control de peso.</p>
+
+                <!-- Datos resumidos de la clínica para presentar su trayectoria. -->
+                <div class="clinic-stats clinic-stats--two">
+                    <div class="clinic-stat">
+                        <strong>Desde 2009</strong>
+                        <span>Acompañando a las familias</span>
+                        </div>
+                    <div class="clinic-stat">
+                         <strong>5 personas</strong>
+                        <span>Experiencia y cariño en cada atención.</span>
+                        </div>
+                    </div>
+                </div>
+             </section>
+
+        <!-- Contacto: incluye ubicación y formulario de consultas. -->
+        <section class="section" id="contacto">
+            <div class="container">
+                <div class="section-heading">
+                    <p class="eyebrow">Estamos para ayudarte</p>
+                    <h2>Contáctanos</h2>
+                    <p>Déjanos tus datos y tu consulta. Nuestro equipo en Rancagua te responderá lo antes posible.</p>
+                </div>
+
+                <div class="contact-layout">
+                    <!-- La ubicación puede ajustarse cuando se confirme la dirección real. -->
+                    <iframe class="map-frame" title="Ubicación de Veterinaria San Marcos en Rancagua"
+                        src="https://www.google.com/maps?q=Veterinaria%20San%20Marcos%2C%20Rancagua%2C%20Chile&output=embed"
+                        loading="lazy"></iframe>
+
+                    <form class="contact-form" id="contact-form">
+                        <div class="form-group">
+                            <label for="name">Nombre</label>
+                            <input id="name" name="name" type="text" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Correo electrónico</label>
+                            <input id="email" name="email" type="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Mensaje</label>
+                            <textarea id="message" name="message" required></textarea>
+                        </div>
+                        <button class="button" type="submit">Enviar consulta</button>
+                        <p class="form-message" id="form-message" role="status" aria-live="polite"></p>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer institucional solicitado en la evaluación. -->
+    <footer class="site-footer" id="carrito">
+        <div class="container">
+            <p>Veterinaria San Marcos</p>
+            <p>Equipo: Dalí Morales Joaquín Diez Marco Palma| DSY1104 - <span id="current-year"></span></p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
