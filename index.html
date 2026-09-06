@@ -22,6 +22,25 @@
                 <a href="#servicios">Servicios</a>
                 <a href="#vacunas">Vacunas</a>
                 <a href="#nosotros">Quiénes somos</a>
+                <a href="#productos">Farmacia</a>
+                <!-- Menú desplegable con las opciones de cuenta. nav.js controla el abrir/cerrar. -->
+                <div class="account-menu">
+                    <button class="account-toggle" id="account-toggle" type="button" aria-haspopup="true"
+                        aria-expanded="false" aria-controls="account-dropdown">
+                        <span aria-hidden="true">👤</span> Mi cuenta <span class="chevron" aria-hidden="true">▾</span>
+                    </button>
+                    <div class="account-dropdown" id="account-dropdown" hidden>
+                        <a href="login.html">Iniciar sesión</a>
+                        <a href="registro.html">Registrarse</a>
+                    </div>
+                </div>
+                <!-- Botón que abre el panel del carrito. El número se actualiza desde script.js. -->
+                <button class="cart-toggle" id="cart-toggle" type="button" aria-haspopup="true" aria-expanded="false"
+                    aria-controls="carrito">
+                    <span aria-hidden="true">🛒</span>
+                    <span class="cart-count" id="cart-count">0</span>
+                    <span class="sr-only">Ver carrito de compras</span>
+                </button>
                 <a class="nav-contact" href="#contacto">Agendar consulta <span aria-hidden="true"></span></a>
             </nav>
         </div>
@@ -137,6 +156,21 @@
             </div>
         </section>
 
+        <!-- Farmacia veterinaria: catálogo de medicamentos con stock real y carrito de compras. -->
+        <section class="section pharmacy-section" id="productos">
+            <div class="container">
+                <div class="section-heading">
+                    <p class="eyebrow">Farmacia veterinaria</p>
+                    <h2>Medicamentos y suplementos</h2>
+                    <p>Revisa el detalle de cada producto y agrégalo al carrito. El stock disponible se actualiza al
+                        instante.</p>
+                </div>
+
+                <!-- Las tarjetas de producto se generan con JavaScript a partir del catálogo (ver script.js). -->
+                <div class="products-grid" id="products-grid"></div>
+            </div>
+        </section>
+
         <!-- Presentación breve del equipo y del propósito del proyecto. -->
         <section class="section about-section" id="nosotros">
             <div class="container about-copy">
@@ -198,14 +232,52 @@
         </section>
     </main>
 
+    <!-- Modal de detalle de producto. Oculto por defecto; script.js lo completa y lo muestra. -->
+    <div class="modal-overlay" id="detail-overlay" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+            <button class="modal-close" id="detail-close" type="button" aria-label="Cerrar detalle">✕</button>
+            <div class="modal-icon" id="detail-icon" aria-hidden="true"></div>
+            <p class="service-category" id="detail-categoria"></p>
+            <h3 id="detail-title"></h3>
+            <p id="detail-descripcion"></p>
+            <div class="detail-meta">
+                <span id="detail-especie"></span>
+                <strong id="detail-precio"></strong>
+            </div>
+            <!-- Este texto avisa cuántas unidades quedan disponibles (stock - lo que ya está en el carrito). -->
+            <p class="detail-stock" id="detail-stock"></p>
+            <button class="button" id="detail-add" type="button">Agregar al carrito</button>
+        </div>
+    </div>
+
+    <!-- Panel lateral del carrito. Se abre con el botón 🛒 del header. -->
+    <aside class="cart-panel" id="carrito" hidden aria-label="Carrito de compras">
+        <div class="cart-panel-header">
+            <h3>Tu carrito</h3>
+            <button class="modal-close" id="cart-close" type="button" aria-label="Cerrar carrito">✕</button>
+        </div>
+        <p class="cart-empty" id="cart-empty">Tu carrito está vacío.</p>
+        <ul class="cart-items" id="cart-items"></ul>
+        <div class="cart-footer" id="cart-footer" hidden>
+            <div class="cart-total">
+                <span>Total</span>
+                <strong id="cart-total">$0</strong>
+            </div>
+            <button class="button" id="cart-clear" type="button">Vaciar carrito</button>
+        </div>
+    </aside>
+    <!-- Fondo oscuro detrás del panel del carrito, para cerrarlo al hacer clic afuera. -->
+    <div class="cart-overlay" id="cart-overlay" hidden></div>
+
     <!-- Footer institucional solicitado en la evaluación. -->
-    <footer class="site-footer" id="carrito">
+    <footer class="site-footer">
         <div class="container">
             <p>Veterinaria San Marcos</p>
             <p>Equipo: Dalí Morales Joaquín Diez Marco Palma| DSY1104 - <span id="current-year"></span></p>
         </div>
     </footer>
 
+    <script src="nav.js"></script>
     <script src="script.js"></script>
 </body>
 
