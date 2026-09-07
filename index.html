@@ -10,55 +10,62 @@
 </head>
 
 <body>
-    <!-- Navegación principal de la página. -->
     <header class="site-header">
         <div class="container nav-wrapper">
             <a class="brand" href="#inicio">
-                <!-- Logo guardado dentro de la carpeta Imagenes. -->
                 <img class="brand-logo" src="Imagenes/Logo%20veterinaria.png" alt="Logo de Veterinaria San Marcos">
                 <span>Veterinaria <strong>San Marcos</strong></span>
             </a>
             <nav class="main-nav" aria-label="Navegación principal">
                 <a href="#servicios">Servicios</a>
-                <a href="#vacunas">Vacunas</a>
-                <a href="#nosotros">Quiénes somos</a>
                 <a href="#productos">Farmacia</a>
-                <!-- Menú desplegable con las opciones de cuenta. nav.js controla el abrir/cerrar. -->
+                <a href="#nosotros">Quiénes somos</a>
+                
                 <div class="account-menu">
                     <button class="account-toggle" id="account-toggle" type="button" aria-haspopup="true"
                         aria-expanded="false" aria-controls="account-dropdown">
-                        <span aria-hidden="true">👤</span> Mi cuenta <span class="chevron" aria-hidden="true">▾</span>
+                        <span aria-hidden="true">👤</span> 
+                        <span id="user-display">Mi cuenta</span> 
+                        <span class="chevron" aria-hidden="true">▾</span>
                     </button>
                     <div class="account-dropdown" id="account-dropdown" hidden>
-                        <a href="login.html">Iniciar sesión</a>
-                        <a href="registro.html">Registrarse</a>
+                        <a href="login.html" id="link-login">Iniciar sesión</a>
+                        <a href="registro.html" id="link-registro">Registrarse</a>
+                        <a href="#" id="link-compras" hidden>Mis compras</a>
+                        <a href="#" id="link-logout" hidden>Cerrar sesión</a>
                     </div>
                 </div>
-                <!-- Botón que abre el panel del carrito. El número se actualiza desde script.js. -->
+
                 <button class="cart-toggle" id="cart-toggle" type="button" aria-haspopup="true" aria-expanded="false"
                     aria-controls="carrito">
                     <span aria-hidden="true">🛒</span>
                     <span class="cart-count" id="cart-count">0</span>
                     <span class="sr-only">Ver carrito de compras</span>
                 </button>
-                <a class="nav-contact" href="#contacto">Agendar consulta <span aria-hidden="true"></span></a>
+                <a class="nav-contact" href="#contacto">Agendar consulta</a>
             </nav>
         </div>
     </header>
 
     <main>
-        <!-- Hero: presenta la identidad y el propósito de la veterinaria. -->
+        <!-- Hero -->
         <section class="hero" id="inicio">
             <div class="container hero-content">
                 <p class="eyebrow">Desde Rancagua, cuidamos lo que más quieres</p>
                 <h1>Salud y bienestar para cada compañero de vida.</h1>
                 <p>Desde 2009 acompañamos a familias de la Región del Libertador General Bernardo O'Higgins con atención
-                    veterinaria cercana y responsable</p>
-                <a class="button" href="#servicios">Conocer nuestros servicios</a>
+                    veterinaria cercana y responsable.</p>
+                <a class="button" href="#productos">Ver Catálogo de Productos</a>
+
+                <!-- Destacados Hero -->
+                <div style="margin-top: 40px;">
+                    <p class="eyebrow" style="margin-bottom: 12px;">Productos Destacados</p>
+                    <div class="featured-grid" id="hero-featured-grid"></div>
+                </div>
             </div>
         </section>
 
-        <!-- Servicios destacados tomados del catálogo entregado. -->
+        <!-- Servicios -->
         <section class="section services-section" id="servicios">
             <div class="container">
                 <div class="section-heading">
@@ -69,33 +76,30 @@
 
                 <div class="featured-grid">
                     <article class="service-card service-card--mint">
-                        <!-- Cambia el emoji de este bloque para usar otro icono. -->
                         <div class="service-icon" aria-hidden="true">🩺</div>
                         <p class="service-category">Consultas</p>
                         <h3>Consulta general</h3>
-                        <p>Evaluación veterinaria para perros y gatos.</p>
+                        <p>Evaluación veterinaria integral para tu mascota.</p>
                         <div class="service-details">
                             <span>30 min</span>
                             <strong>$15.000</strong>
                         </div>
                     </article>
                     <article class="service-card service-card--blue">
-                        <!-- Cambia el emoji de este bloque para usar otro icono. -->
                         <div class="service-icon" aria-hidden="true">💉</div>
                         <p class="service-category">Vacunación</p>
-                        <h3>Vacunas</h3>
-                        <p>Protección preventiva para perros y gatos en distintas etapas.</p>
+                        <h3>Vacunas obligatorias y opcionales</h3>
+                        <p>Protección preventiva para perros y gatos.</p>
                         <div class="service-details">
-                            <span>Perros y gatos</span>
-                            <a class="service-link" href="#vacunas">Ver catálogo <span aria-hidden="true">→</span></a>
+                            <span>Desde 10 min</span>
+                            <strong>Desde $12.000</strong>
                         </div>
                     </article>
                     <article class="service-card service-card--yellow">
-                        <!-- Cambia el emoji de este bloque para usar otro icono. -->
                         <div class="service-icon" aria-hidden="true">🛡️</div>
                         <p class="service-category">Desparasitación</p>
-                        <h3>Desparasitación interna</h3>
-                        <p>Prevención para mantener a tu mascota protegida.</p>
+                        <h3>Desparasitación interna y externa</h3>
+                        <p>Prevención de parásitos según peso y especie.</p>
                         <div class="service-details">
                             <span>5 min</span>
                             <strong>Desde $8.000</strong>
@@ -105,73 +109,44 @@
             </div>
         </section>
 
-        <!-- Catálogo inicial de vacunas tomado del archivo de servicios. -->
-        <section class="section vaccine-section" id="vacunas">
-            <div class="container">
-                <div class="section-heading">
-                    <p class="eyebrow">Prevención y cuidado</p>
-                    <h2>Catálogo de vacunas</h2>
-                    <p>Selecciona la vacuna adecuada según la especie y las indicaciones de nuestro equipo veterinario.
-                    </p>
-                </div>
-
-                <div class="vaccine-grid">
-                    <article class="vaccine-card">
-                        <span class="vaccine-code">VA001</span>
-                        <h3>Antirrábica canina</h3>
-                        <p>Para perros · 10 min</p>
-                        <strong>$12.000</strong>
-                    </article>
-                    <article class="vaccine-card">
-                        <span class="vaccine-code">VA002</span>
-                        <h3>Séxtuple canina</h3>
-                        <p>Para perros · Refuerzo anual</p>
-                        <strong>$18.000</strong>
-                    </article>
-                    <article class="vaccine-card">
-                        <span class="vaccine-code">VA003</span>
-                        <h3>Bivalente felina</h3>
-                        <p>Para gatos · Refuerzo anual</p>
-                        <strong>$15.000</strong>
-                    </article>
-                    <article class="vaccine-card">
-                        <span class="vaccine-code">VA004</span>
-                        <h3>Triple felina</h3>
-                        <p>Para gatos · Refuerzo anual</p>
-                        <strong>$17.000</strong>
-                    </article>
-                    <article class="vaccine-card">
-                        <span class="vaccine-code">VA005</span>
-                        <h3>Bordetella canina</h3>
-                        <p>Para perros · Tos de las perreras</p>
-                        <strong>$14.000</strong>
-                    </article>
-                    <article class="vaccine-card">
-                        <span class="vaccine-code">VA006</span>
-                        <h3>Antirrábica felina</h3>
-                        <p>Para gatos · 10 min</p>
-                        <strong>$12.000</strong>
-                    </article>
-                </div>
-            </div>
-        </section>
-
-        <!-- Farmacia veterinaria: catálogo de medicamentos con stock real y carrito de compras. -->
+        <!-- Farmacia / Catálogo de Productos -->
         <section class="section pharmacy-section" id="productos">
             <div class="container">
                 <div class="section-heading">
                     <p class="eyebrow">Farmacia veterinaria</p>
-                    <h2>Medicamentos y suplementos</h2>
-                    <p>Revisa el detalle de cada producto y agrégalo al carrito. El stock disponible se actualiza al
-                        instante.</p>
+                    <h2>Catálogo de Productos y Medicamentos</h2>
+                    <p>Filtra por categoría y rango de precio en tiempo real. Selecciona un producto para consultar su detalle o agregarlo al carrito.</p>
                 </div>
 
-                <!-- Las tarjetas de producto se generan con JavaScript a partir del catálogo (ver script.js). -->
+                <!-- Filtros combinados dinámicos -->
+                <div class="catalog-filters" style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px;">
+                    <div style="flex: 1; min-width: 200px;">
+                        <label for="filter-categoria" style="font-weight: bold; display: block; margin-bottom: 6px;">Categoría:</label>
+                        <select id="filter-categoria" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #c9e3e6;">
+                            <option value="TODAS">Todas las categorías</option>
+                            <option value="Antibióticos">Antibióticos</option>
+                            <option value="Antiparasitarios">Antiparasitarios</option>
+                            <option value="Antiinflamatorios">Antiinflamatorios</option>
+                            <option value="Dermatología">Dermatología</option>
+                            <option value="Digestivo">Digestivo</option>
+                            <option value="Cardíaco">Cardíaco</option>
+                            <option value="Analgésicos">Analgésicos</option>
+                            <option value="Vacunas">Vacunas</option>
+                            <option value="Suplementos">Suplementos</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1; min-width: 200px;">
+                        <label for="filter-precio" style="font-weight: bold; display: block; margin-bottom: 6px;">Precio Máximo: <span id="price-value">$30.000</span></label>
+                        <input type="range" id="filter-precio" min="3000" max="30000" step="1000" value="30000" style="width: 100%;">
+                    </div>
+                </div>
+
                 <div class="products-grid" id="products-grid"></div>
             </div>
         </section>
 
-        <!-- Presentación breve del equipo y del propósito del proyecto. -->
+        <!-- Quiénes Somos -->
+        <!-- Presentación del equipo y del propósito del proyecto -->
         <section class="section about-section" id="nosotros">
             <div class="container about-copy">
                 <p class="eyebrow">Nuestra historia</p>
@@ -182,21 +157,21 @@
                     recepcionista administrativa. Atendemos principalmente perros y gatos, además de conejos y aves, con
                     servicios de consulta general, vacunación, cirugía menor, desparasitación y control de peso.</p>
 
-                <!-- Datos resumidos de la clínica para presentar su trayectoria. -->
+                <!-- Resumen visual de la trayectoria y capacidad de la clínica -->
                 <div class="clinic-stats clinic-stats--two">
                     <div class="clinic-stat">
                         <strong>Desde 2009</strong>
                         <span>Acompañando a las familias</span>
-                        </div>
+                    </div>
                     <div class="clinic-stat">
-                         <strong>5 personas</strong>
+                        <strong>5 personas</strong>
                         <span>Experiencia y cariño en cada atención.</span>
-                        </div>
                     </div>
                 </div>
-             </section>
+            </div>
+        </section>
 
-        <!-- Contacto: incluye ubicación y formulario de consultas. -->
+        <!-- Contacto: ubicación y formulario -->
         <section class="section" id="contacto">
             <div class="container">
                 <div class="section-heading">
@@ -206,7 +181,6 @@
                 </div>
 
                 <div class="contact-layout">
-                    <!-- La ubicación puede ajustarse cuando se confirme la dirección real. -->
                     <iframe class="map-frame" title="Ubicación de Veterinaria San Marcos en Rancagua"
                         src="https://www.google.com/maps?q=Veterinaria%20San%20Marcos%2C%20Rancagua%2C%20Chile&output=embed"
                         loading="lazy"></iframe>
@@ -232,7 +206,7 @@
         </section>
     </main>
 
-    <!-- Modal de detalle de producto. Oculto por defecto; script.js lo completa y lo muestra. -->
+    <!-- Modal Detalle de Producto -->
     <div class="modal-overlay" id="detail-overlay" hidden>
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="detail-title">
             <button class="modal-close" id="detail-close" type="button" aria-label="Cerrar detalle">✕</button>
@@ -244,13 +218,24 @@
                 <span id="detail-especie"></span>
                 <strong id="detail-precio"></strong>
             </div>
-            <!-- Este texto avisa cuántas unidades quedan disponibles (stock - lo que ya está en el carrito). -->
             <p class="detail-stock" id="detail-stock"></p>
             <button class="button" id="detail-add" type="button">Agregar al carrito</button>
         </div>
     </div>
 
-    <!-- Panel lateral del carrito. Se abre con el botón 🛒 del header. -->
+    <!-- Modal Historial de Compras -->
+    <div class="modal-overlay" id="orders-overlay" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="orders-title" style="max-width: 600px; width: 90%;">
+            <button class="modal-close" id="orders-close" type="button" aria-label="Cerrar historial">✕</button>
+            <div class="modal-icon" aria-hidden="true">📦</div>
+            <p class="service-category">Historial de pedidos</p>
+            <h3 id="orders-title">Mis Compras Realizadas</h3>
+            
+            <div id="orders-container" style="max-height: 350px; overflow-y: auto; margin-top: 16px; text-align: left;"></div>
+        </div>
+    </div>
+
+    <!-- Panel Lateral del Carrito -->
     <aside class="cart-panel" id="carrito" hidden aria-label="Carrito de compras">
         <div class="cart-panel-header">
             <h3>Tu carrito</h3>
@@ -263,17 +248,16 @@
                 <span>Total</span>
                 <strong id="cart-total">$0</strong>
             </div>
+            <button class="button" id="cart-checkout" type="button" style="margin-bottom: 8px;">Finalizar Compra</button>
             <button class="button" id="cart-clear" type="button">Vaciar carrito</button>
         </div>
     </aside>
-    <!-- Fondo oscuro detrás del panel del carrito, para cerrarlo al hacer clic afuera. -->
     <div class="cart-overlay" id="cart-overlay" hidden></div>
 
-    <!-- Footer institucional solicitado en la evaluación. -->
     <footer class="site-footer">
         <div class="container">
             <p>Veterinaria San Marcos</p>
-            <p>Equipo: Dalí Morales Joaquín Diez Marco Palma| DSY1104 - <span id="current-year"></span></p>
+            <p>Equipo: Dalí Morales | Joaquín Diez | Marco Palma — DSY1104 – <span id="current-year"></span></p>
         </div>
     </footer>
 
