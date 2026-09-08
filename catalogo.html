@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Catálogo de productos veterinarios de Veterinaria San Marcos.">
+    <title>Catálogo — Veterinaria San Marcos</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="container nav-wrapper">
+            <a class="brand" href="index.html">
+                <img class="brand-logo" src="Imagenes/Logo%20veterinaria.png" alt="Logo de Veterinaria San Marcos">
+                <span>Veterinaria <strong>San Marcos</strong></span>
+            </a>
+            <nav class="main-nav" aria-label="Navegación principal">
+                <a href="index.html#inicio">Inicio</a>
+                <a href="catalogo.html" aria-current="page">Catálogo</a>
+                <a href="index.html#nosotros">Quiénes somos</a>
+
+                <div class="account-menu">
+                    <button class="account-toggle" id="account-toggle" type="button" aria-haspopup="true"
+                        aria-expanded="false" aria-controls="account-dropdown">
+                        <span aria-hidden="true">👤</span>
+                        <span id="user-display">Mi cuenta</span>
+                        <span class="chevron" aria-hidden="true">▾</span>
+                    </button>
+                    <div class="account-dropdown" id="account-dropdown" hidden>
+                        <a href="login.html" id="link-login">Iniciar sesión</a>
+                        <a href="registro.html" id="link-registro">Registrarse</a>
+                        <a href="#" id="link-compras" hidden>Mis compras</a>
+                        <a href="#" id="link-logout" hidden>Cerrar sesión</a>
+                    </div>
+                </div>
+
+                <button class="cart-toggle" id="cart-toggle" type="button" aria-haspopup="true" aria-expanded="false"
+                    aria-controls="carrito">
+                    <span aria-hidden="true">🛒</span>
+                    <span class="cart-count" id="cart-count">0</span>
+                    <span class="sr-only">Ver carrito de compras</span>
+                </button>
+                <a class="nav-contact" href="index.html#contacto">Agendar consulta</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="section catalog-page">
+            <div class="container">
+                <div class="catalog-hero">
+                    <div class="catalog-hero-copy">
+                        <p class="eyebrow">Cuidado animal, elegido con cariño</p>
+                        <h1>Encuentra lo que tu mascota necesita.</h1>
+                        <p>Explora productos seleccionados para acompañar la salud y el bienestar de perros y gatos.</p>
+                    </div>
+                    <div class="catalog-hero-mark" aria-hidden="true">🐾</div>
+                </div>
+
+                <div class="catalog-toolbar">
+                    <div class="catalog-filter">
+                        <label for="filter-categoria">Categoría</label>
+                        <select id="filter-categoria">
+                            <option value="TODAS">Todas las categorías</option>
+                            <option value="Antibióticos">Antibióticos</option>
+                            <option value="Antiparasitarios">Antiparasitarios</option>
+                            <option value="Antiinflamatorios">Antiinflamatorios</option>
+                            <option value="Dermatología">Dermatología</option>
+                            <option value="Digestivo">Digestivo</option>
+                            <option value="Cardíaco">Cardíaco</option>
+                            <option value="Analgésicos">Analgésicos</option>
+                            <option value="Vacunas">Vacunas</option>
+                            <option value="Suplementos">Suplementos</option>
+                        </select>
+                    </div>
+                    <div class="catalog-filter catalog-filter--price">
+                        <label for="filter-precio">Precio máximo <span id="price-value">$30.000</span></label>
+                        <input type="range" id="filter-precio" min="3000" max="30000" step="1000" value="30000">
+                    </div>
+                </div>
+
+                <div class="products-grid" id="products-grid"></div>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal-overlay" id="detail-overlay" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+            <button class="modal-close" id="detail-close" type="button" aria-label="Cerrar detalle">✕</button>
+            <div class="modal-icon" id="detail-icon" aria-hidden="true"></div>
+            <p class="service-category" id="detail-categoria"></p>
+            <h3 id="detail-title"></h3>
+            <p id="detail-descripcion"></p>
+            <div class="detail-meta">
+                <span id="detail-especie"></span>
+                <strong id="detail-precio"></strong>
+            </div>
+            <p class="detail-stock" id="detail-stock"></p>
+            <button class="button" id="detail-add" type="button">Agregar al carrito</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="orders-overlay" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="orders-title">
+            <button class="modal-close" id="orders-close" type="button" aria-label="Cerrar historial">✕</button>
+            <div class="modal-icon" aria-hidden="true">📦</div>
+            <p class="service-category">Historial de pedidos</p>
+            <h3 id="orders-title">Mis Compras Realizadas</h3>
+            <div id="orders-container" style="max-height: 350px; overflow-y: auto; margin-top: 16px; text-align: left;"></div>
+        </div>
+    </div>
+
+    <aside class="cart-panel" id="carrito" hidden aria-label="Carrito de compras">
+        <div class="cart-panel-header">
+            <h3>Tu carrito</h3>
+            <button class="modal-close" id="cart-close" type="button" aria-label="Cerrar carrito">✕</button>
+        </div>
+        <p class="cart-empty" id="cart-empty">Tu carrito está vacío.</p>
+        <ul class="cart-items" id="cart-items"></ul>
+        <div class="cart-footer" id="cart-footer" hidden>
+            <div class="cart-total">
+                <span>Total</span>
+                <strong id="cart-total">$0</strong>
+            </div>
+            <button class="button" id="cart-checkout" type="button" style="margin-bottom: 8px;">Finalizar Compra</button>
+            <button class="button" id="cart-clear" type="button">Vaciar carrito</button>
+        </div>
+    </aside>
+    <div class="cart-overlay" id="cart-overlay" hidden></div>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>Veterinaria San Marcos</p>
+            <p>Equipo: Dalí Morales | Joaquín Diez | Marco Palma — DSY1104 – <span id="current-year"></span></p>
+        </div>
+    </footer>
+
+    <script src="nav.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

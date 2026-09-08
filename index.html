@@ -17,8 +17,7 @@
                 <span>Veterinaria <strong>San Marcos</strong></span>
             </a>
             <nav class="main-nav" aria-label="Navegación principal">
-                <a href="#servicios">Servicios</a>
-                <a href="#productos">Farmacia</a>
+                <a href="catalogo.html">Catálogo</a>
                 <a href="#nosotros">Quiénes somos</a>
                 
                 <div class="account-menu">
@@ -36,12 +35,6 @@
                     </div>
                 </div>
 
-                <button class="cart-toggle" id="cart-toggle" type="button" aria-haspopup="true" aria-expanded="false"
-                    aria-controls="carrito">
-                    <span aria-hidden="true">🛒</span>
-                    <span class="cart-count" id="cart-count">0</span>
-                    <span class="sr-only">Ver carrito de compras</span>
-                </button>
                 <a class="nav-contact" href="#contacto">Agendar consulta</a>
             </nav>
         </div>
@@ -55,7 +48,7 @@
                 <h1>Salud y bienestar para cada compañero de vida.</h1>
                 <p>Desde 2009 acompañamos a familias de la Región del Libertador General Bernardo O'Higgins con atención
                     veterinaria cercana y responsable.</p>
-                <a class="button" href="#productos">Ver Catálogo de Productos</a>
+                <a class="button" href="catalogo.html">Ver Catálogo de Productos</a>
 
                 <!-- Destacados Hero -->
                 <div style="margin-top: 40px;">
@@ -65,83 +58,38 @@
             </div>
         </section>
 
-        <!-- Servicios -->
-        <section class="section services-section" id="servicios">
+        <!-- Equipo de especialistas -->
+        <section class="section specialists-section" id="especialistas">
             <div class="container">
                 <div class="section-heading">
-                    <p class="eyebrow">Atención veterinaria</p>
-                    <h2>Servicios para cada etapa</h2>
-                    <p>Conoce algunos de los servicios que ofrecemos para perros, gatos, conejos y aves.</p>
+                    <p class="eyebrow">Nuestro equipo</p>
+                    <h2>Profesionales que cuidan a tu mascota</h2>
+                    <p>Conoce al equipo de Veterinaria San Marcos y la experiencia que ponemos al servicio de cada familia.</p>
                 </div>
 
-                <div class="featured-grid">
-                    <article class="service-card service-card--mint">
-                        <div class="service-icon" aria-hidden="true">🩺</div>
-                        <p class="service-category">Consultas</p>
-                        <h3>Consulta general</h3>
-                        <p>Evaluación veterinaria integral para tu mascota.</p>
-                        <div class="service-details">
-                            <span>30 min</span>
-                            <strong>$15.000</strong>
-                        </div>
+                <div class="specialists-grid">
+                    <article class="specialist-card">
+                        <div class="specialist-avatar specialist-avatar--mint" aria-hidden="true">🩺</div>
+                        <p class="service-category">Equipo médico</p>
+                        <h3>Médicos veterinarios</h3>
+                        <p>Tres profesionales encargados de evaluar, diagnosticar y acompañar la salud de tu mascota.</p>
+                        <span class="specialist-tag">3 profesionales</span>
                     </article>
-                    <article class="service-card service-card--blue">
-                        <div class="service-icon" aria-hidden="true">💉</div>
-                        <p class="service-category">Vacunación</p>
-                        <h3>Vacunas obligatorias y opcionales</h3>
-                        <p>Protección preventiva para perros y gatos.</p>
-                        <div class="service-details">
-                            <span>Desde 10 min</span>
-                            <strong>Desde $12.000</strong>
-                        </div>
+                    <article class="specialist-card">
+                        <div class="specialist-avatar specialist-avatar--coral" aria-hidden="true">🛡️</div>
+                        <p class="service-category">Apoyo clínico</p>
+                        <h3>Técnico veterinario</h3>
+                        <p>Apoya los procedimientos y entrega cuidados atentos para que cada visita sea segura y cercana.</p>
+                        <span class="specialist-tag">Cuidado especializado</span>
                     </article>
-                    <article class="service-card service-card--yellow">
-                        <div class="service-icon" aria-hidden="true">🛡️</div>
-                        <p class="service-category">Desparasitación</p>
-                        <h3>Desparasitación interna y externa</h3>
-                        <p>Prevención de parásitos según peso y especie.</p>
-                        <div class="service-details">
-                            <span>5 min</span>
-                            <strong>Desde $8.000</strong>
-                        </div>
+                    <article class="specialist-card">
+                        <div class="specialist-avatar specialist-avatar--yellow" aria-hidden="true">✚</div>
+                        <p class="service-category">Primera atención</p>
+                        <h3>Recepción administrativa</h3>
+                        <p>Te orienta, coordina tus horas y ayuda a que la atención de tu familia sea simple y ordenada.</p>
+                        <span class="specialist-tag">Orientación cercana</span>
                     </article>
                 </div>
-            </div>
-        </section>
-
-        <!-- Farmacia / Catálogo de Productos -->
-        <section class="section pharmacy-section" id="productos">
-            <div class="container">
-                <div class="section-heading">
-                    <p class="eyebrow">Farmacia veterinaria</p>
-                    <h2>Catálogo de Productos y Medicamentos</h2>
-                    <p>Filtra por categoría y rango de precio en tiempo real. Selecciona un producto para consultar su detalle o agregarlo al carrito.</p>
-                </div>
-
-                <!-- Filtros combinados dinámicos -->
-                <div class="catalog-filters" style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px;">
-                    <div style="flex: 1; min-width: 200px;">
-                        <label for="filter-categoria" style="font-weight: bold; display: block; margin-bottom: 6px;">Categoría:</label>
-                        <select id="filter-categoria" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #c9e3e6;">
-                            <option value="TODAS">Todas las categorías</option>
-                            <option value="Antibióticos">Antibióticos</option>
-                            <option value="Antiparasitarios">Antiparasitarios</option>
-                            <option value="Antiinflamatorios">Antiinflamatorios</option>
-                            <option value="Dermatología">Dermatología</option>
-                            <option value="Digestivo">Digestivo</option>
-                            <option value="Cardíaco">Cardíaco</option>
-                            <option value="Analgésicos">Analgésicos</option>
-                            <option value="Vacunas">Vacunas</option>
-                            <option value="Suplementos">Suplementos</option>
-                        </select>
-                    </div>
-                    <div style="flex: 1; min-width: 200px;">
-                        <label for="filter-precio" style="font-weight: bold; display: block; margin-bottom: 6px;">Precio Máximo: <span id="price-value">$30.000</span></label>
-                        <input type="range" id="filter-precio" min="3000" max="30000" step="1000" value="30000" style="width: 100%;">
-                    </div>
-                </div>
-
-                <div class="products-grid" id="products-grid"></div>
             </div>
         </section>
 
@@ -206,58 +154,33 @@
         </section>
     </main>
 
-    <!-- Modal Detalle de Producto -->
-    <div class="modal-overlay" id="detail-overlay" hidden>
-        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="detail-title">
-            <button class="modal-close" id="detail-close" type="button" aria-label="Cerrar detalle">✕</button>
-            <div class="modal-icon" id="detail-icon" aria-hidden="true"></div>
-            <p class="service-category" id="detail-categoria"></p>
-            <h3 id="detail-title"></h3>
-            <p id="detail-descripcion"></p>
-            <div class="detail-meta">
-                <span id="detail-especie"></span>
-                <strong id="detail-precio"></strong>
-            </div>
-            <p class="detail-stock" id="detail-stock"></p>
-            <button class="button" id="detail-add" type="button">Agregar al carrito</button>
-        </div>
-    </div>
-
-    <!-- Modal Historial de Compras -->
-    <div class="modal-overlay" id="orders-overlay" hidden>
-        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="orders-title" style="max-width: 600px; width: 90%;">
-            <button class="modal-close" id="orders-close" type="button" aria-label="Cerrar historial">✕</button>
-            <div class="modal-icon" aria-hidden="true">📦</div>
-            <p class="service-category">Historial de pedidos</p>
-            <h3 id="orders-title">Mis Compras Realizadas</h3>
-            
-            <div id="orders-container" style="max-height: 350px; overflow-y: auto; margin-top: 16px; text-align: left;"></div>
-        </div>
-    </div>
-
-    <!-- Panel Lateral del Carrito -->
-    <aside class="cart-panel" id="carrito" hidden aria-label="Carrito de compras">
-        <div class="cart-panel-header">
-            <h3>Tu carrito</h3>
-            <button class="modal-close" id="cart-close" type="button" aria-label="Cerrar carrito">✕</button>
-        </div>
-        <p class="cart-empty" id="cart-empty">Tu carrito está vacío.</p>
-        <ul class="cart-items" id="cart-items"></ul>
-        <div class="cart-footer" id="cart-footer" hidden>
-            <div class="cart-total">
-                <span>Total</span>
-                <strong id="cart-total">$0</strong>
-            </div>
-            <button class="button" id="cart-checkout" type="button" style="margin-bottom: 8px;">Finalizar Compra</button>
-            <button class="button" id="cart-clear" type="button">Vaciar carrito</button>
-        </div>
-    </aside>
-    <div class="cart-overlay" id="cart-overlay" hidden></div>
-
     <footer class="site-footer">
         <div class="container">
-            <p>Veterinaria San Marcos</p>
-            <p>Equipo: Dalí Morales | Joaquín Diez | Marco Palma — DSY1104 – <span id="current-year"></span></p>
+            <div class="footer-main">
+                <div class="footer-brand-block">
+                    <a class="footer-brand" href="#inicio">
+                        <img class="brand-logo" src="Imagenes/Logo%20veterinaria.png" alt="">
+                        <span>Veterinaria <strong>San Marcos</strong></span>
+                    </a>
+                    <p>Cuidado cercano para quienes hacen de tu casa un hogar.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Explora</h3>
+                    <a href="#inicio">Inicio</a>
+                    <a href="catalogo.html">Catálogo</a>
+                    <a href="#especialistas">Especialistas</a>
+                    <a href="#nosotros">Quiénes somos</a>
+                </div>
+                <div class="footer-column">
+                    <h3>Conversemos</h3>
+                    <p>Estamos en Rancagua, Región de O'Higgins.</p>
+                    <a class="footer-action" href="#contacto">Agendar consulta <span aria-hidden="true">→</span></a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Equipo: Dalí Morales | Joaquín Diez | Marco Palma</p>
+                <p>DSY1104 · <span id="current-year"></span></p>
+            </div>
         </div>
     </footer>
 
