@@ -1,4 +1,6 @@
-/* Paleta principal basada en el turquesa del logo. */
+/* =======================================================
+   Paleta principal basada en el turquesa del logo.
+   ======================================================= */
 :root {
     --color-logo: #1594a3;
     --color-logo-dark: #0d6875;
@@ -36,7 +38,9 @@ body {
     padding: 0 24px;
 }
 
-/* Barra de navegación principal. */
+/* =======================================================
+   Barra de navegación principal
+   ======================================================= */
 .site-header {
     background: rgba(244, 251, 252, 0.94);
     border-bottom: 1px solid #d3edf0;
@@ -113,15 +117,15 @@ body {
     color: var(--color-white) !important;
 }
 
-/* Presentación principal con un fondo luminoso relacionado al logo. */
+/* =======================================================
+   Hero / Banner Principal
+   ======================================================= */
 .hero {
     background: radial-gradient(circle at 86% 18%, #c7eef1 0, transparent 25%), linear-gradient(135deg, #e3f7f8 0%, var(--color-background) 62%);
     overflow: hidden;
     padding: 106px 0 116px;
     position: relative;
 }
-
-
 
 .hero-content {
     max-width: 720px;
@@ -137,9 +141,7 @@ body {
     text-transform: uppercase;
 }
 
-h1,
-h2,
-h3 {
+h1, h2, h3 {
     line-height: 1.12;
 }
 
@@ -184,7 +186,9 @@ h2 {
     transform: translateY(-2px);
 }
 
-/* Secciones de contenido de la página principal. */
+/* =======================================================
+   Secciones generales
+   ======================================================= */
 .section {
     padding: 88px 0;
 }
@@ -264,63 +268,107 @@ h2 {
     padding-top: 16px;
 }
 
-.service-link {
-    font-weight: bold;
-    text-decoration: none;
-}
-
-.service-link:hover,
-.service-link:focus-visible {
-    color: var(--color-coral);
-}
-
-/* Catálogo de vacunas. */
-.vaccine-section {
-    background: var(--color-soft-blue);
-}
-
-.vaccine-grid {
-    display: grid;
-    gap: 18px;
-    grid-template-columns: repeat(3, 1fr);
-}
-
-.vaccine-card {
+/* =======================================================
+   Farmacia veterinaria: tarjetas de producto (con stock)
+   ======================================================= */
+.pharmacy-section {
     background: var(--color-white);
-    border: 1px solid #cae8eb;
-    border-radius: 12px;
-    padding: 23px;
-    transition: border-color 180ms ease, transform 180ms ease;
 }
 
-.vaccine-card:hover {
-    border-color: var(--color-logo);
-    transform: translateY(-3px);
+.products-grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(4, 1fr);
 }
 
-.vaccine-code {
-    color: var(--color-coral);
-    font-size: 0.75rem;
-    font-weight: bold;
-    letter-spacing: 0.1em;
+.product-card {
+    background: var(--color-white);
+    border: 1px solid #d2edf0;
+    border-radius: 16px;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    padding: 22px;
+    transition: box-shadow 180ms ease, transform 180ms ease;
 }
 
-.vaccine-card h3 {
-    font-size: 1.15rem;
-    margin: 10px 0 7px;
+.product-card:hover {
+    box-shadow: 0 18px 38px rgba(25, 59, 70, 0.14);
+    transform: translateY(-4px);
 }
 
-.vaccine-card p {
-    color: var(--color-muted);
-    font-size: 0.9rem;
+.product-icon {
+    align-items: center;
+    background: var(--color-soft-blue);
+    border-radius: 14px;
+    display: flex;
+    font-size: 2rem;
+    height: 58px;
+    justify-content: center;
     margin-bottom: 14px;
+    width: 58px;
 }
 
-.vaccine-card strong {
+.product-card h3 {
+    font-size: 1.05rem;
+    margin: 4px 0 6px;
+}
+
+.product-card .service-category {
     color: var(--color-logo-dark);
 }
 
-/* Presentación del equipo. */
+.product-especie {
+    color: var(--color-muted);
+    font-size: 0.85rem;
+}
+
+.product-footer {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 14px;
+}
+
+.product-price {
+    color: var(--color-logo-dark);
+    font-weight: bold;
+}
+
+.product-stock {
+    font-size: 0.78rem;
+    margin-top: 10px;
+}
+
+.product-stock--low,
+.detail-stock--low {
+    color: var(--color-coral);
+    font-weight: bold;
+}
+
+.product-detail-btn {
+    background: var(--color-soft-blue);
+    border: 0;
+    border-radius: 999px;
+    color: var(--color-logo-dark);
+    cursor: pointer;
+    font: inherit;
+    font-weight: bold;
+    margin-top: 14px;
+    padding: 10px 16px;
+    transition: background-color 180ms ease;
+    width: 100%;
+}
+
+.product-detail-btn:hover,
+.product-detail-btn:focus-visible {
+    background: #c9eef1;
+}
+
+/* =======================================================
+   Presentación del equipo (Quiénes Somos - RESTAURADO)
+   ======================================================= */
 .about-section {
     background: var(--color-logo-dark);
     color: var(--color-white);
@@ -339,7 +387,6 @@ h2 {
     margin-bottom: 14px;
 }
 
-/* Resumen visual de la trayectoria y capacidad de la clínica. */
 .clinic-stats {
     border-top: 1px solid rgba(212, 239, 241, 0.32);
     display: grid;
@@ -367,7 +414,9 @@ h2 {
     margin-top: 8px;
 }
 
-/* Contacto y formulario. */
+/* =======================================================
+   Contacto y formulario (RESTAURADO A 2 COLUMNAS)
+   ======================================================= */
 .contact-layout {
     display: grid;
     gap: 30px;
@@ -404,6 +453,7 @@ h2 {
 }
 
 .form-group input,
+.form-group select,
 .form-group textarea {
     background: #fbfefe;
     border: 1px solid #c9e3e6;
@@ -417,6 +467,7 @@ h2 {
 }
 
 .form-group input:focus,
+.form-group select:focus,
 .form-group textarea:focus {
     border-color: var(--color-logo);
     box-shadow: 0 0 0 3px #d8f2f4;
@@ -432,7 +483,363 @@ h2 {
     margin-top: 16px;
 }
 
-/* Pie común de la aplicación. */
+/* =======================================================
+   Botón de carrito en el header
+   ======================================================= */
+.cart-toggle {
+    align-items: center;
+    background: transparent;
+    border: 1px solid #cae8eb;
+    border-radius: 999px;
+    color: var(--color-ink);
+    cursor: pointer;
+    display: inline-flex;
+    font: inherit;
+    gap: 6px;
+    padding: 8px 12px;
+}
+
+.cart-count {
+    background: var(--color-coral);
+    border-radius: 999px;
+    color: var(--color-white);
+    font-size: 0.75rem;
+    font-weight: bold;
+    min-width: 20px;
+    padding: 1px 6px;
+    text-align: center;
+}
+
+.sr-only {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    width: 1px;
+}
+
+/* =======================================================
+   Modales (Detalle y Mis Compras)
+   ======================================================= */
+.modal-overlay {
+    align-items: center;
+    background: rgba(18, 50, 60, 0.55);
+    display: flex;
+    inset: 0;
+    justify-content: center;
+    padding: 20px;
+    position: fixed;
+    z-index: 30;
+}
+
+.modal-overlay[hidden] {
+    display: none;
+}
+
+.modal {
+    background: var(--color-white);
+    border-radius: 18px;
+    box-shadow: var(--shadow-soft);
+    max-width: 420px;
+    padding: 32px;
+    position: relative;
+    width: 100%;
+}
+
+.modal-close {
+    background: transparent;
+    border: 0;
+    color: var(--color-muted);
+    cursor: pointer;
+    font-size: 1.1rem;
+    position: absolute;
+    right: 16px;
+    top: 16px;
+}
+
+.modal-icon {
+    align-items: center;
+    background: var(--color-soft-blue);
+    border-radius: 16px;
+    display: flex;
+    font-size: 2.4rem;
+    height: 68px;
+    justify-content: center;
+    margin-bottom: 16px;
+    width: 68px;
+}
+
+.detail-meta {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    margin: 16px 0 6px;
+}
+
+.detail-meta strong {
+    color: var(--color-logo-dark);
+    font-size: 1.2rem;
+}
+
+.detail-stock {
+    color: var(--color-muted);
+    font-size: 0.85rem;
+    margin-bottom: 16px;
+}
+
+/* Estilos para el Historial de Compras */
+.order-card {
+    background: #fbfefe;
+    border: 1px solid #d2edf0;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 14px;
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e2f0f1;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.order-id {
+    font-weight: bold;
+    color: var(--color-logo-dark);
+}
+
+.order-date {
+    color: var(--color-muted);
+    font-size: 0.82rem;
+}
+
+.order-items-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 10px 0;
+    font-size: 0.88rem;
+}
+
+.order-item-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+}
+
+.order-total-row {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    border-top: 1px dashed #c9e3e6;
+    padding-top: 8px;
+    color: var(--color-ink);
+}
+
+/* =======================================================
+   Panel lateral del carrito
+   ======================================================= */
+.cart-overlay {
+    background: rgba(18, 50, 60, 0.45);
+    inset: 0;
+    position: fixed;
+    z-index: 20;
+}
+
+.cart-overlay[hidden] {
+    display: none;
+}
+
+.cart-panel {
+    background: var(--color-white);
+    box-shadow: -12px 0 30px rgba(25, 59, 70, 0.18);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-width: 100%;
+    padding: 24px;
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 380px;
+    z-index: 30;
+}
+
+.cart-panel[hidden] {
+    display: none;
+}
+
+.cart-panel-header {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    position: relative;
+}
+
+.cart-items {
+    flex: 1;
+    list-style: none;
+    overflow-y: auto;
+}
+
+.cart-item {
+    border-bottom: 1px solid #e2f0f1;
+    padding: 14px 0;
+}
+
+.cart-item-top {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+}
+
+.cart-item-controls {
+    align-items: center;
+    color: var(--color-muted);
+    display: flex;
+    font-size: 0.9rem;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.qty-btn {
+    background: var(--color-soft-blue);
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+    font: inherit;
+    padding: 2px 9px;
+}
+
+.cart-item-remove {
+    background: transparent;
+    border: 0;
+    color: var(--color-coral);
+    cursor: pointer;
+    font-size: 0.85rem;
+    margin-left: auto;
+}
+
+.cart-empty {
+    color: var(--color-muted);
+}
+
+.cart-footer {
+    border-top: 1px solid #e2f0f1;
+    padding-top: 16px;
+}
+
+.cart-total {
+    display: flex;
+    font-size: 1.1rem;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+/* =======================================================
+   Páginas de autenticación (registro / login)
+   ======================================================= */
+.auth-section {
+    display: flex;
+    justify-content: center;
+    padding: 60px 0 100px;
+}
+
+.auth-container {
+    display: flex;
+    justify-content: center;
+}
+
+.auth-card {
+    background: var(--color-white);
+    border: 1px solid #d2edf0;
+    border-radius: 20px;
+    box-shadow: var(--shadow-soft);
+    max-width: 560px;
+    padding: 40px;
+    width: 100%;
+}
+
+.auth-subtitle {
+    color: var(--color-muted);
+    margin: 8px 0 26px;
+}
+
+.field-error {
+    color: var(--color-coral);
+    display: block;
+    font-size: 0.82rem;
+    font-weight: bold;
+    margin-top: 5px;
+    min-height: 1em;
+}
+
+/* =======================================================
+   Menú desplegable "Mi cuenta" del header
+   ======================================================= */
+.account-menu {
+    position: relative;
+}
+
+.account-toggle {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    color: var(--color-ink);
+    cursor: pointer;
+    display: inline-flex;
+    font: inherit;
+    font-size: 0.92rem;
+    gap: 6px;
+    padding: 9px 13px;
+}
+
+.chevron {
+    font-size: 0.7rem;
+    transition: transform 150ms ease;
+}
+
+.account-toggle[aria-expanded="true"] .chevron {
+    transform: rotate(180deg);
+}
+
+.account-dropdown {
+    background: var(--color-white);
+    border: 1px solid #d2edf0;
+    border-radius: 12px;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    min-width: 170px;
+    padding: 8px;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    z-index: 15;
+}
+
+.account-dropdown[hidden] {
+    display: none;
+}
+
+.account-dropdown a {
+    border-radius: 8px;
+    color: var(--color-ink);
+    padding: 10px 12px;
+    text-decoration: none;
+}
+
+.account-dropdown a:hover,
+.account-dropdown a:focus-visible {
+    background: var(--color-soft-blue);
+    color: var(--color-logo-dark);
+}
+
+/* Pie de página */
 .site-footer {
     background: #12323c;
     color: var(--color-white);
@@ -446,9 +853,8 @@ h2 {
     margin-top: 6px;
 }
 
-/* Ajustes para pantallas pequeñas. */
+/* Responsividad para móviles */
 @media (max-width: 760px) {
-
     .nav-wrapper,
     .main-nav {
         align-items: flex-start;
@@ -474,7 +880,7 @@ h2 {
     }
 
     .featured-grid,
-    .vaccine-grid,
+    .products-grid,
     .contact-layout {
         grid-template-columns: 1fr;
     }
@@ -483,7 +889,8 @@ h2 {
         grid-template-columns: repeat(2, minmax(130px, 1fr));
     }
 
-    .service-card>p:not(.service-category) {
-        min-height: auto;
+    .account-dropdown {
+        left: 0;
+        right: auto;
     }
 }
