@@ -1,0 +1,217 @@
+/* =======================================================
+   Navigation bar and account dropdown
+   ======================================================= */
+.site-header {
+    background: linear-gradient(135deg, rgba(238, 250, 248, 0.98), rgba(252, 247, 240, 0.98));
+    border-bottom: 1px solid #ccecef;
+    box-shadow: 0 8px 22px rgba(25, 59, 70, 0.08);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.nav-wrapper {
+    align-items: center;
+    display: flex;
+    gap: 28px;
+    justify-content: space-between;
+    min-height: 82px;
+}
+
+.brand {
+    align-items: center;
+    background: transparent;
+    border: none;
+    color: var(--color-ink);
+    display: inline-flex;
+    font-size: 1.2rem;
+    font-weight: bold;
+    gap: 11px;
+    padding: 7px 14px 7px 7px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: opacity 200ms ease;
+}
+
+.brand:hover,
+.brand:focus-visible {
+    opacity: 0.85;
+}
+
+.brand strong {
+    color: var(--color-logo);
+}
+
+.brand-logo {
+    border-radius: 8px;
+    height: 44px;
+    object-fit: cover;
+    width: 44px;
+}
+
+.main-nav {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    justify-content: flex-end;
+}
+
+.main-nav a {
+    border-radius: 999px;
+    color: var(--color-ink);
+    font-size: 0.92rem;
+    font-weight: 700;
+    padding: 10px 14px;
+    text-decoration: none;
+    transition: background-color 180ms ease, color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+.main-nav a:hover,
+.main-nav a:focus-visible {
+    background: var(--color-soft-blue);
+    color: var(--color-logo-dark);
+    box-shadow: 0 8px 16px rgba(25, 59, 70, 0.08);
+    transform: translateY(-2px);
+}
+
+.nav-contact {
+    background: linear-gradient(135deg, var(--color-logo), var(--color-logo-dark));
+    border-radius: 999px;
+    color: var(--color-white) !important;
+    font-weight: bold;
+    margin-left: 8px;
+    padding: 10px 16px !important;
+    box-shadow: 0 10px 18px rgba(21, 148, 163, 0.2);
+}
+
+.nav-contact:hover,
+.nav-contact:focus-visible {
+    color: var(--color-white) !important;
+    background: var(--color-logo-dark);
+}
+
+.account-menu {
+    position: relative;
+}
+
+.account-toggle {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    color: var(--color-ink);
+    cursor: pointer;
+    display: inline-flex;
+    font: inherit;
+    font-size: 0.92rem;
+    gap: 6px;
+    padding: 9px 13px;
+}
+
+.chevron {
+    font-size: 0.7rem;
+    transition: transform 150ms ease;
+}
+
+.account-toggle[aria-expanded="true"] .chevron {
+    transform: rotate(180deg);
+}
+
+.account-dropdown {
+    background: var(--color-white);
+    border: 1px solid #d2edf0;
+    border-radius: 12px;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    min-width: 170px;
+    padding: 8px;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    z-index: 15;
+}
+
+.account-dropdown[hidden] {
+    display: none;
+}
+
+.account-dropdown a {
+    border-radius: 8px;
+    color: var(--color-ink);
+    padding: 10px 12px;
+    text-decoration: none;
+}
+
+.account-dropdown a:hover,
+.account-dropdown a:focus-visible {
+    background: var(--color-soft-blue);
+    color: var(--color-logo-dark);
+}
+
+.cart-toggle {
+    align-items: center;
+    background: transparent;
+    border: 1px solid #cae8eb;
+    border-radius: 999px;
+    color: var(--color-ink);
+    cursor: pointer;
+    display: inline-flex;
+    font: inherit;
+    gap: 6px;
+    padding: 8px 12px;
+}
+
+.cart-count {
+    background: var(--color-coral);
+    border-radius: 999px;
+    color: var(--color-white);
+    font-size: 0.75rem;
+    font-weight: bold;
+    min-width: 20px;
+    padding: 1px 6px;
+    text-align: center;
+}
+
+.sr-only {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    width: 1px;
+}
+
+/* Hamburger Menu */
+.nav-toggle {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    color: var(--color-ink);
+    cursor: pointer;
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    padding: 8px;
+}
+
+.nav-toggle-line {
+    background: linear-gradient(90deg, var(--color-logo), var(--color-logo-dark));
+    border-radius: 2px;
+    display: block;
+    height: 3px;
+    transition: all 320ms cubic-bezier(0.23, 1, 0.320, 1);
+    width: 26px;
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle-line:nth-child(1) {
+    transform: translateY(10px) rotate(45deg);
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle-line:nth-child(2) {
+    opacity: 0;
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle-line:nth-child(3) {
+    transform: translateY(-10px) rotate(-45deg);
+}

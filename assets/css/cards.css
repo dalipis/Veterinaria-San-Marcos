@@ -1,0 +1,172 @@
+/* =======================================================
+   Cards for services, products and specialists
+   ======================================================= */
+.featured-grid {
+    display: grid;
+    gap: 22px;
+    grid-template-columns: repeat(3, minmax(200px, 1fr));
+}
+
+.service-card {
+    background: var(--color-white);
+    border: 1px solid #d2edf0;
+    border-radius: 22px;
+    box-shadow: var(--shadow-soft);
+    color: var(--color-ink);
+    min-height: 250px;
+    padding: 28px;
+    position: relative;
+    transition: box-shadow 260ms ease, transform 260ms ease, border-color 260ms ease;
+}
+
+.service-card::after {
+    background: linear-gradient(120deg, transparent, rgba(21, 148, 163, 0.08));
+    border-radius: 22px;
+    content: '';
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    transition: opacity 260ms ease;
+}
+
+.service-card:hover {
+    border-color: var(--color-logo);
+    box-shadow: 0 20px 42px rgba(25, 59, 70, 0.15);
+    transform: translateY(-5px);
+}
+
+.service-card:hover::after {
+    opacity: 1;
+}
+
+.service-icon {
+    align-items: center;
+    background: linear-gradient(135deg, var(--color-logo), var(--color-logo-dark));
+    border: 4px solid #c9eef1;
+    border-radius: 18px;
+    color: var(--color-white);
+    display: flex;
+    font-size: 2.6rem;
+    height: 78px;
+    justify-content: center;
+    margin-bottom: 22px;
+    width: 78px;
+}
+
+.service-category,
+.service-details strong,
+.service-link {
+    color: var(--color-logo-dark);
+}
+
+.service-category {
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.service-card h3 {
+    font-size: 1.35rem;
+    margin: 8px 0;
+}
+
+.service-card>p:not(.service-category) {
+    color: var(--color-muted);
+    min-height: 52px;
+}
+
+.service-details {
+    align-items: center;
+    border-top: 1px solid #e2f0f1;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 22px;
+    padding-top: 16px;
+}
+
+.service-details span {
+    color: var(--color-muted);
+    font-size: 0.86rem;
+}
+
+.service-details strong {
+    color: var(--color-coral);
+    font-size: 1.1rem;
+}
+
+.specialists-section {
+    background: #fffaf7;
+}
+
+.specialists-grid {
+    display: grid;
+    gap: 22px;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.specialist-card {
+    background: var(--color-white);
+    border: 1px solid #f0dfd8;
+    border-radius: 18px;
+    box-shadow: 0 12px 28px rgba(25, 59, 70, 0.07);
+    padding: 26px;
+    transition: box-shadow 180ms ease, transform 180ms ease;
+}
+
+.specialist-card:hover {
+    box-shadow: 0 20px 38px rgba(25, 59, 70, 0.13);
+    transform: translateY(-5px);
+}
+
+.specialist-avatar {
+    align-items: center;
+    border-radius: 16px;
+    display: flex;
+    font-size: 2.3rem;
+    height: 72px;
+    justify-content: center;
+    margin-bottom: 22px;
+    width: 72px;
+}
+
+.specialist-avatar--mint {
+    background: #dff6f1;
+}
+
+.specialist-avatar--coral {
+    background: #fff0eb;
+}
+
+.specialist-avatar--yellow {
+    background: #fff5cf;
+    color: #9a6d00;
+    font-size: 2.8rem;
+    font-weight: bold;
+}
+
+.specialist-card h3 {
+    font-size: 1.35rem;
+    margin: 8px 0 10px;
+}
+
+.specialist-card>p:not(.service-category) {
+    color: var(--color-muted);
+    min-height: 76px;
+}
+
+.specialist-tag {
+    background: #f0f9f9;
+    border-radius: 999px;
+    color: var(--color-logo-dark);
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: bold;
+    margin-top: 20px;
+    padding: 7px 11px;
+}
+
+.pharmacy-section {
+    background: var(--color-white);
+}

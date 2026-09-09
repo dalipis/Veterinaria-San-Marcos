@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Veterinaria San Marcos: servicios, cuidado y bienestar para tus mascotas.">
     <title>Veterinaria San Marcos</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body>
@@ -16,15 +16,20 @@
                 <img class="brand-logo" src="Imagenes/Logo%20veterinaria.png" alt="Logo de Veterinaria San Marcos">
                 <span>Veterinaria <strong>San Marcos</strong></span>
             </a>
-            <nav class="main-nav" aria-label="Navegación principal">
+            <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="mobile-nav">
+                <span class="nav-toggle-line"></span>
+                <span class="nav-toggle-line"></span>
+                <span class="nav-toggle-line"></span>
+            </button>
+            <nav class="main-nav" id="mobile-nav" aria-label="Navegación principal">
                 <a href="catalogo.html">Catálogo</a>
                 <a href="#nosotros">Quiénes somos</a>
-                
+
                 <div class="account-menu">
                     <button class="account-toggle" id="account-toggle" type="button" aria-haspopup="true"
                         aria-expanded="false" aria-controls="account-dropdown">
-                        <span aria-hidden="true">👤</span> 
-                        <span id="user-display">Mi cuenta</span> 
+                        <span aria-hidden="true">👤</span>
+                        <span id="user-display">Mi cuenta</span>
                         <span class="chevron" aria-hidden="true">▾</span>
                     </button>
                     <div class="account-dropdown" id="account-dropdown" hidden>
@@ -71,7 +76,8 @@
                 <div class="section-heading">
                     <p class="eyebrow">Nuestro equipo</p>
                     <h2>Profesionales que cuidan a tu mascota</h2>
-                    <p>Conoce al equipo de Veterinaria San Marcos y la experiencia que ponemos al servicio de cada familia.</p>
+                    <p>Conoce al equipo de Veterinaria San Marcos y la experiencia que ponemos al servicio de cada
+                        familia.</p>
                 </div>
 
                 <div class="specialists-grid">
@@ -79,21 +85,24 @@
                         <div class="specialist-avatar specialist-avatar--mint" aria-hidden="true">🩺</div>
                         <p class="service-category">Equipo médico</p>
                         <h3>Médicos veterinarios</h3>
-                        <p>Tres profesionales encargados de evaluar, diagnosticar y acompañar la salud de tu mascota.</p>
+                        <p>Tres profesionales encargados de evaluar, diagnosticar y acompañar la salud de tu mascota.
+                        </p>
                         <span class="specialist-tag">3 profesionales</span>
                     </article>
                     <article class="specialist-card">
                         <div class="specialist-avatar specialist-avatar--coral" aria-hidden="true">🛡️</div>
                         <p class="service-category">Apoyo clínico</p>
                         <h3>Técnico veterinario</h3>
-                        <p>Apoya los procedimientos y entrega cuidados atentos para que cada visita sea segura y cercana.</p>
+                        <p>Apoya los procedimientos y entrega cuidados atentos para que cada visita sea segura y
+                            cercana.</p>
                         <span class="specialist-tag">Cuidado especializado</span>
                     </article>
                     <article class="specialist-card">
                         <div class="specialist-avatar specialist-avatar--yellow" aria-hidden="true">✚</div>
                         <p class="service-category">Primera atención</p>
                         <h3>Recepción administrativa</h3>
-                        <p>Te orienta, coordina tus horas y ayuda a que la atención de tu familia sea simple y ordenada.</p>
+                        <p>Te orienta, coordina tus horas y ayuda a que la atención de tu familia sea simple y ordenada.
+                        </p>
                         <span class="specialist-tag">Orientación cercana</span>
                     </article>
                 </div>
@@ -137,7 +146,7 @@
 
                 <div class="contact-layout">
                     <iframe class="map-frame" title="Ubicación de Veterinaria San Marcos en Rancagua"
-                        src="https://www.google.com/maps?q=Veterinaria%20San%20Marcos%2C%20Rancagua%2C%20Chile&output=embed"
+                        src=\"https://www.google.com/maps?q=-34.1704,-70.7440&z=15&output=embed\"
                         loading="lazy"></iframe>
 
                     <form class="contact-form" id="contact-form">
@@ -152,7 +161,7 @@
                         <div class="form-group">
                             <label for="message">Mensaje</label>
                             <textarea id="message" name="message" required></textarea>
-                        </div> 
+                        </div>
                         <button class="button" type="submit">Enviar consulta</button>
                         <p class="form-message" id="form-message" role="status" aria-live="polite"></p>
                     </form>
@@ -186,7 +195,8 @@
                 <span>Total</span>
                 <strong id="cart-total">$0</strong>
             </div>
-            <button class="button" id="cart-checkout" type="button" style="margin-bottom: 8px;">Finalizar Compra</button>
+            <button class="button" id="cart-checkout" type="button" style="margin-bottom: 8px;">Finalizar
+                Compra</button>
             <button class="button" id="cart-clear" type="button">Vaciar carrito</button>
         </div>
     </aside>
@@ -222,8 +232,8 @@
         </div>
     </footer>
 
-    <script src="nav.js"></script>
-    <script src="script.js"></script>
+    <script src="assets/js/nav.js"></script>
+    <script src="assets/js/script.js"></script>
 </body>
 
 </html>

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Iniciar sesión en Veterinaria San Marcos.">
     <title>Iniciar Sesión — Veterinaria San Marcos</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body>
@@ -46,7 +46,8 @@
                     <form id="login-form" class="auth-form" novalidate>
                         <div class="form-group">
                             <label for="correo">Correo electrónico institucional</label>
-                            <input id="correo" name="correo" type="email" placeholder="nombre.apellido@duoc.cl" required>
+                            <input id="correo" name="correo" type="email" placeholder="nombre.apellido@duoc.cl"
+                                required>
                             <span class="field-error" id="error-correo"></span>
                         </div>
 
@@ -60,7 +61,8 @@
                         <p class="form-message" id="form-message" role="status" aria-live="polite"></p>
 
                         <div style="margin-top: 20px; font-size: 0.9rem; text-align: center;">
-                            ¿Aún no tienes cuenta? <a href="registro.html" style="color: var(--color-logo-dark); font-weight: bold;">Regístrate aquí</a>
+                            ¿Aún no tienes cuenta? <a href="registro.html"
+                                style="color: var(--color-logo-dark); font-weight: bold;">Regístrate aquí</a>
                         </div>
                     </form>
                 </div>
@@ -68,15 +70,8 @@
         </section>
     </main>
 
-    <footer class="site-footer">
-        <div class="container">
-            <p>Veterinaria San Marcos</p>
-            <p>Equipo: Dalí Morales | Joaquín Diez | Marco Palma — DSY1104 – <span id="current-year"></span></p>
-        </div>
-    </footer>
-
-    <script src="nav.js"></script>
-    <script src="login.js"></script>
+    <script src="assets/js/nav.js"></script>
+    <script src="assets/js/login.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,55 @@
+/* =======================================================
+   Quiénes somos and clinic story
+   ======================================================= */
+.about-section {
+    background: var(--color-logo-dark);
+    color: var(--color-white);
+    padding: 78px 0;
+}
+
+.about-section h2 {
+    color: var(--color-white);
+    margin-bottom: 20px;
+}
+
+.about-section .eyebrow {
+    color: #a5e5e8;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.about-copy {
+    max-width: 700px;
+}
+
+.about-copy p {
+    color: #d4eff1;
+    margin-bottom: 14px;
+}
+
+.clinic-stats {
+    border-top: 1px solid rgba(212, 239, 241, 0.32);
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 30px;
+    padding-top: 24px;
+}
+
+.clinic-stats--two {
+    grid-template-columns: repeat(2, minmax(180px, 260px));
+}
+
+.clinic-stat strong {
+    color: var(--color-white);
+    display: block;
+    font-size: 1.8rem;
+    line-height: 1;
+}
+
+.clinic-stat span {
+    color: #b9dce0;
+    display: block;
+    font-size: 0.84rem;
+    margin-top: 8px;
+}
