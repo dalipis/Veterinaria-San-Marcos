@@ -1186,3 +1186,117 @@ h2 {
         gap: 6px;
     }
 }
+/* =======================================================
+   Avisos temporales ("toast"), reemplazan a alert()
+   ======================================================= */
+.toast-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: fixed;
+    right: 20px;
+    top: 20px;
+    z-index: 60;
+}
+
+.toast {
+    animation: toast-entrada 200ms ease;
+    background: var(--color-ink);
+    border-radius: 10px;
+    box-shadow: var(--shadow-soft);
+    color: var(--color-white);
+    font-size: 0.9rem;
+    max-width: 320px;
+    padding: 14px 18px;
+}
+
+.toast--exito {
+    background: var(--color-logo-dark);
+}
+
+.toast--error {
+    background: var(--color-coral);
+}
+
+.toast--saliendo {
+    animation: toast-salida 250ms ease forwards;
+}
+
+@keyframes toast-entrada {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes toast-salida {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+}
+
+@media (max-width: 480px) {
+    .toast-container {
+        left: 16px;
+        right: 16px;
+    }
+
+    .toast {
+        max-width: none;
+    }
+}
+
+/* =======================================================
+   Botón "Agregar al carrito" directo en la tarjeta
+   ======================================================= */
+.product-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.product-card-actions .product-detail-btn {
+    margin-top: 0;
+}
+
+.product-add-btn {
+    background: var(--color-coral);
+    border: 0;
+    border-radius: 999px;
+    color: var(--color-white);
+    cursor: pointer;
+    font: inherit;
+    font-weight: bold;
+    padding: 10px 16px;
+    transition: background-color 180ms ease;
+    width: 100%;
+}
+
+.product-add-btn:hover:not(:disabled),
+.product-add-btn:focus-visible:not(:disabled) {
+    background: #d9604d;
+}
+
+.product-add-btn:disabled {
+    background: #cbd5d6;
+    cursor: not-allowed;
+}
+
+/* Precio unitario dentro de cada línea del carrito. */
+.cart-item-price {
+    color: var(--color-muted);
+    font-size: 0.8rem;
+    margin-top: 3px;
+}

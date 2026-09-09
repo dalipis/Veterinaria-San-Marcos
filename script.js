@@ -4,6 +4,32 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentYear) currentYear.textContent = new Date().getFullYear();
 
     // ===================================================================
+    // 0. AVISOS TEMPORALES (reemplaza a alert(), que bloquea la página
+    // y el profesor pidió sacar). El toast se crea solo, se muestra unos
+    // segundos y se quita sin necesitar que el usuario haga clic en nada.
+    // ===================================================================
+    const mostrarAviso = (mensaje, tipo = 'info') => {
+        let contenedor = document.querySelector('#toast-container');
+        if (!contenedor) {
+            contenedor = document.createElement('div');
+            contenedor.id = 'toast-container';
+            contenedor.className = 'toast-container';
+            document.body.appendChild(contenedor);
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `toast toast--${tipo}`;
+        toast.setAttribute('role', 'status');
+        toast.textContent = mensaje;
+        contenedor.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('toast--saliendo');
+            setTimeout(() => toast.remove(), 250);
+        }, 3200);
+    };
+
+    // ===================================================================
     // 1. SESIÓN DE USUARIO, MENÚ Y HISTORIAL "MIS COMPRAS"
     // ===================================================================
     const userDisplay = document.querySelector('#user-display');
@@ -235,7 +261,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p class="product-stock ${sinStock ? 'product-stock--low' : ''}">
                     ${sinStock ? 'Sin stock disponible' : `Disponible: ${disponible} unidades`}
                 </p>
-                <button class="product-detail-btn" type="button" data-id="${producto.id}">Ver detalle</button>
+                <div class="product-card-actions">
+                    <button class="product-detail-btn" type="button" data-action="detalle" data-id="${producto.id}">Ver detalle</button>
+                    <button class="product-add-btn" type="button" data-action="agregar" data-id="${producto.id}" ${sinStock ? 'disabled' : ''}>
+                        ${sinStock ? 'Sin stock' : 'Agregar al carrito'}
+                    </button>
+                </div>
             `;
             productsGrid.appendChild(card);
         });
@@ -306,8 +337,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (productsGrid) {
         productsGrid.addEventListener('click', (e) => {
-            const btn = e.target.closest('.product-detail-btn');
-            if (btn) abrirDetalle(btn.dataset.id);
+            const detalleBtn = e.target.closest('[data-action="detalle"]');
+            if (detalleBtn) {
+                abrirDetalle(detalleBtn.dataset.id);
+                return;
+            }
+
+            const agregarBtn = e.target.closest('[data-action="agregar"]');
+            if (agregarBtn) agregarAlCarrito(agregarBtn.dataset.id);
         });
     }
 
@@ -375,7 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const nuevaCant = item.cantidad + delta;
 
         if (delta > 0 && nuevaCant > producto.stock) {
-            alert(`No hay suficiente stock disponible. Máximo: ${producto.stock}`);
+            mostrarAviso(`No hay suficiente stock disponible. Máximo: ${producto.stock}`, 'error');
             return;
         }
 
@@ -415,8 +452,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const usuarioSesion = JSON.parse(localStorage.getItem(USUARIO_LOGUEADO_KEY));
             if (!usuarioSesion) {
-                alert('Debes iniciar sesión con tu cuenta para realizar la compra.');
-                window.location.href = 'login.html';
+                mostrarAviso('Debes iniciar sesión con tu cuenta para realizar la compra.', 'error');
+                // Pequeño respiro para que el usuario alcance a leer el aviso antes de navegar.
+                setTimeout(() => { window.location.href = 'login.html'; }, 1200);
                 return;
             }
 
@@ -427,7 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let item of carrito) {
                 const prod = productos.find(p => p.id === item.id);
                 if (!prod || prod.stock < item.cantidad) {
-                    alert(`Stock insuficiente para el producto: ${prod ? prod.nombre : 'Desconocido'}.`);
+                    mostrarAviso(`Stock insuficiente para el producto: ${prod ? prod.nombre : 'Desconocido'}.`, 'error');
                     return;
                 }
                 const subtotal = prod.precio * item.cantidad;
@@ -464,11 +502,14 @@ document.addEventListener('DOMContentLoaded', () => {
             guardarProductos(productos);
             guardarCarrito([]);
 
-            alert(`¡Compra realizada con éxito, ${usuarioSesion.nombre}! El pedido #${nuevaOrden.idOrden} ha quedado registrado en tu cuenta.`);
+            mostrarAviso(`¡Compra realizada con éxito, ${usuarioSesion.nombre}! Pedido #${nuevaOrden.idOrden} registrado.`, 'exito');
             cerrarCarrito();
-            renderProductos();
-            renderHeroFeatured();
-            renderCarrito();
+
+            // La pauta pide que, al finalizar la compra, se vuelva a la página principal.
+            // Si ya estamos en index.html esto simplemente refresca sus datos (stock, destacados).
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1600);
         });
     }
 
@@ -511,6 +552,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span>${producto.nombre}</span>
                         <span>${formatearPrecio(subtotal)}</span>
                     </div>
+                    <p class="cart-item-price">Precio unitario: ${formatearPrecio(producto.precio)}</p>
                     <div class="cart-item-controls">
                         <button class="qty-btn" type="button" data-action="restar" data-id="${producto.id}">−</button>
                         <span>${item.cantidad}</span>

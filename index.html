@@ -36,6 +36,13 @@
                 </div>
 
                 <a class="nav-contact" href="#contacto">Agendar consulta</a>
+                <!-- Ícono del carrito, requerido en la página principal por la pauta (sección 1). -->
+                <button class="cart-toggle" id="cart-toggle" type="button" aria-haspopup="true" aria-expanded="false"
+                    aria-controls="carrito">
+                    <span aria-hidden="true">🛒</span>
+                    <span class="cart-count" id="cart-count">0</span>
+                    <span class="sr-only">Ver carrito de compras</span>
+                </button>
             </nav>
         </div>
     </header>
@@ -153,6 +160,37 @@
             </div>
         </section>
     </main>
+
+    <!-- Historial de compras del usuario logueado (abre desde "Mis compras" del menú de cuenta). -->
+    <div class="modal-overlay" id="orders-overlay" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="orders-title">
+            <button class="modal-close" id="orders-close" type="button" aria-label="Cerrar historial">✕</button>
+            <div class="modal-icon" aria-hidden="true">📦</div>
+            <p class="service-category">Historial de pedidos</p>
+            <h3 id="orders-title">Mis Compras Realizadas</h3>
+            <div id="orders-container" style="max-height: 350px; overflow-y: auto; margin-top: 16px; text-align: left;">
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel lateral del carrito. Se abre con el botón 🛒 del header. -->
+    <aside class="cart-panel" id="carrito" hidden aria-label="Carrito de compras">
+        <div class="cart-panel-header">
+            <h3>Tu carrito</h3>
+            <button class="modal-close" id="cart-close" type="button" aria-label="Cerrar carrito">✕</button>
+        </div>
+        <p class="cart-empty" id="cart-empty">Tu carrito está vacío.</p>
+        <ul class="cart-items" id="cart-items"></ul>
+        <div class="cart-footer" id="cart-footer" hidden>
+            <div class="cart-total">
+                <span>Total</span>
+                <strong id="cart-total">$0</strong>
+            </div>
+            <button class="button" id="cart-checkout" type="button" style="margin-bottom: 8px;">Finalizar Compra</button>
+            <button class="button" id="cart-clear" type="button">Vaciar carrito</button>
+        </div>
+    </aside>
+    <div class="cart-overlay" id="cart-overlay" hidden></div>
 
     <footer class="site-footer">
         <div class="container">
