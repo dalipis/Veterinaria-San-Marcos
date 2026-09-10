@@ -70,6 +70,15 @@
     width: 100%;
 }
 
+.contact-layout > * {
+    min-width: 0;
+}
+
+.contact-layout iframe {
+    display: block;
+    max-width: 100%;
+}
+
 .form-group input::placeholder,
 .form-group textarea::placeholder {
     color: #9db3ba;

@@ -84,11 +84,38 @@ document.addEventListener('DOMContentLoaded', () => {
     // Hamburger Menu para móvil y tablet
     const navToggle = document.querySelector('#nav-toggle');
     const mobileNav = document.querySelector('#mobile-nav');
+    const cartToggle = document.querySelector('#cart-toggle');
 
     if (navToggle && mobileNav) {
+        const mobileQuery = window.matchMedia('(max-width: 1024px)');
+        const cartParent = cartToggle ? cartToggle.parentElement : null;
+        const cartNextSibling = cartToggle ? cartToggle.nextElementSibling : null;
+
+        const actualizarCarritoResponsive = () => {
+            if (!cartToggle || !cartParent) return;
+
+            if (mobileQuery.matches) {
+                if (cartToggle.parentElement !== navToggle.parentElement) {
+                    navToggle.parentElement.insertBefore(cartToggle, mobileNav);
+                }
+                cartToggle.classList.add('mobile-cart-toggle');
+            } else {
+                if (cartToggle.parentElement !== cartParent) {
+                    cartParent.insertBefore(cartToggle, cartNextSibling);
+                }
+                cartToggle.classList.remove('mobile-cart-toggle');
+            }
+        };
+
+        actualizarCarritoResponsive();
+        mobileQuery.addEventListener('change', actualizarCarritoResponsive);
+
+        window.addEventListener('resize', actualizarCarritoResponsive);
+
         const abrirCerrarMenu = () => {
             const estaAbierto = navToggle.getAttribute('aria-expanded') === 'true';
             navToggle.setAttribute('aria-expanded', String(!estaAbierto));
+            navToggle.setAttribute('aria-label', estaAbierto ? 'Abrir menú de navegación' : 'Cerrar menú de navegación');
             
             if (!estaAbierto) {
                 mobileNav.setAttribute('data-mobile-open', 'true');

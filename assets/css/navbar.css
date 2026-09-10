@@ -43,10 +43,16 @@
 }
 
 .brand-logo {
-    border-radius: 8px;
     height: 44px;
     object-fit: cover;
+    box-shadow: none;
+    filter: none;
     width: 44px;
+}
+
+.footer-brand .brand-logo {
+    background: transparent;
+    border-radius: 0;
 }
 
 .main-nav {
@@ -83,6 +89,19 @@
     margin-left: 8px;
     padding: 10px 16px !important;
     box-shadow: 0 10px 18px rgba(21, 148, 163, 0.2);
+}
+
+/* Mantiene el carrito entre "Mi cuenta" y "Agendar consulta". */
+.main-nav .account-menu {
+    order: 2;
+}
+
+.main-nav .cart-toggle {
+    order: 3;
+}
+
+.main-nav .nav-contact {
+    order: 4;
 }
 
 .nav-contact:hover,
@@ -196,7 +215,7 @@
 }
 
 .nav-toggle-line {
-    background: linear-gradient(90deg, var(--color-logo), var(--color-logo-dark));
+    background: var(--color-logo-dark);
     border-radius: 2px;
     display: block;
     height: 3px;

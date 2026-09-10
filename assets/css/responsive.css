@@ -1,7 +1,21 @@
 /* =======================================================
    Responsive styles
    ======================================================= */
-@media (min-width: 768px) and (max-width: 1279px) {
+.form-group .checkbox-label {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    line-height: 1.4;
+}
+
+.form-group .checkbox-label input[type='checkbox'] {
+    flex: 0 0 auto;
+    margin: 0;
+    width: auto;
+}
+
+@media (min-width: 1025px) and (max-width: 1279px) {
     .nav-wrapper {
         gap: 14px;
         min-height: 76px;
@@ -37,7 +51,7 @@
     }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1024px) {
     .nav-wrapper {
         align-items: center;
         flex-wrap: wrap;
@@ -60,6 +74,25 @@
 
     .nav-toggle {
         display: flex;
+        position: absolute;
+        right: 14px;
+        top: 12px;
+    }
+
+    .mobile-cart-toggle {
+        display: inline-flex;
+        gap: 4px;
+        margin: 0;
+        padding: 6px 9px;
+        position: absolute;
+        right: 68px;
+        top: 4px;
+    }
+
+    .mobile-cart-toggle .cart-count {
+        font-size: 0.68rem;
+        min-width: 18px;
+        padding: 1px 5px;
     }
 
     .main-nav {
@@ -77,6 +110,12 @@
         width: 100%;
         z-index: 9;
         animation: slideDown 320ms cubic-bezier(0.23, 1, 0.320, 1) forwards;
+    }
+
+    .main-nav .account-menu,
+    .main-nav .cart-toggle,
+    .main-nav .nav-contact {
+        order: initial;
     }
 
     .main-nav[data-mobile-open="true"] {
@@ -109,8 +148,10 @@
 
     .account-menu {
         display: flex;
+        align-items: center;
+        flex-direction: column;
         width: 100%;
-        justify-content: flex-start;
+        justify-content: center;
     }
 
     .account-dropdown {
@@ -119,14 +160,17 @@
         box-shadow: inset 0 2px 8px rgba(25, 59, 70, 0.06);
         margin: 0;
         margin-top: 8px;
-        min-width: none;
+        min-width: 0;
         width: calc(100% - 48px);
         margin-left: 24px;
+        align-self: center;
     }
 
     .account-toggle {
         font-size: 0.85rem;
         padding: 12px 24px;
+        justify-content: center;
+        width: 100%;
     }
 
     .nav-contact {
@@ -138,14 +182,35 @@
     }
 
     .cart-toggle {
-        position: absolute;
-        top: 12px;
-        right: 24px;
         padding: 8px 12px;
     }
 }
 
+@media (min-width: 761px) and (max-width: 900px) {
+    .featured-grid,
+    .specialists-grid,
+    .products-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .contact-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-main {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .footer-brand-block {
+        grid-column: 1 / -1;
+    }
+}
+
 @media (max-width: 760px) {
+    body {
+        overflow-x: hidden;
+    }
+
     .container {
         padding: 0 18px;
     }
@@ -169,6 +234,11 @@
         padding: 76px 0 84px;
     }
 
+    .hero::before,
+    .hero::after {
+        display: none;
+    }
+
     .hero-content {
         max-width: none;
     }
@@ -190,6 +260,10 @@
         flex-direction: column;
         gap: 20px;
         padding: 32px 26px;
+    }
+
+    .catalog-hero h1 {
+        font-size: clamp(2rem, 9vw, 3rem);
     }
 
     .catalog-hero-mark {
@@ -306,6 +380,12 @@
 
     .footer-main {
         gap: 20px;
+    }
+
+    .footer-bottom {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
     }
 
     .footer-column a,
