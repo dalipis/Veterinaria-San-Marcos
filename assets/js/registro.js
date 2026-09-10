@@ -1,10 +1,12 @@
 // Espera a que el HTML esté disponible antes de buscar sus elementos.
 document.addEventListener('DOMContentLoaded', () => {
-
-    document.querySelector('#current-year').textContent = new Date().getFullYear();
+    const yearSpan = document.querySelector('#current-year');
+    if (yearSpan) yearSpan.textContent = new Date().getFullYear();
 
     const form = document.querySelector('#registro-form');
     const formMessage = document.querySelector('#form-message');
+
+    if (!form || !formMessage) return;
 
     // Clave donde se guardan TODOS los usuarios registrados (un array de objetos).
     // login.html va a leer de esta misma clave para validar las credenciales.
@@ -12,9 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const EDAD_MINIMA = 14;
     const DOMINIO_PERMITIDO = '@duoc.cl';
 
+    const normalizarCorreo = (valor) => String(valor || '').trim().toLowerCase();
+
     const obtenerUsuarios = () => {
         try {
-            return JSON.parse(localStorage.getItem(USUARIOS_KEY)) || [];
+            const usuarios = JSON.parse(localStorage.getItem(USUARIOS_KEY));
+            return Array.isArray(usuarios) ? usuarios : [];
         } catch {
             return [];
         }
@@ -29,23 +34,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const calcularEdad = (fechaNacimientoStr) => {
         const hoy = new Date();
         const nacimiento = new Date(fechaNacimientoStr);
+
+        if (Number.isNaN(nacimiento.getTime())) {
+            return 0;
+        }
+
         let edad = hoy.getFullYear() - nacimiento.getFullYear();
         const noHaCumplidoAnos =
             hoy.getMonth() < nacimiento.getMonth() ||
             (hoy.getMonth() === nacimiento.getMonth() && hoy.getDate() < nacimiento.getDate());
+
         if (noHaCumplidoAnos) edad -= 1;
         return edad;
     };
 
     // Mínimo 8 caracteres, al menos 1 mayúscula y 1 número.
-    // (Formato definido por el equipo; el enunciado solo pide "requisitos de
-    // seguridad", no un formato exacto.)
     const passwordValida = (password) => /^(?=.*[A-Z])(?=.*\d).{8,}$/.test(password);
 
     // Limpia todos los mensajes de error de un envío anterior.
     const limpiarErrores = () => {
         document.querySelectorAll('.field-error').forEach((span) => (span.textContent = ''));
         formMessage.textContent = '';
+        formMessage.style.color = '';
     };
 
     const mostrarError = (idCampo, mensaje) => {
@@ -61,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
             nombre: form.nombre.value.trim(),
             apellido: form.apellido.value.trim(),
             fechaNacimiento: form.fechaNacimiento.value,
-            correo: form.correo.value.trim().toLowerCase(),
+            correo: normalizarCorreo(form.correo.value),
             password: form.password.value,
             confirmarPassword: form.confirmarPassword.value,
             direccion: form.direccion.value.trim(),
@@ -98,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
             marcarError('correo', 'El correo no tiene un formato válido.');
         } else if (!datos.correo.endsWith(DOMINIO_PERMITIDO)) {
             marcarError('correo', `Solo se aceptan correos del dominio ${DOMINIO_PERMITIDO}.`);
-        } else if (obtenerUsuarios().some((usuario) => usuario.correo === datos.correo)) {
+        } else if (obtenerUsuarios().some((usuario) => normalizarCorreo(usuario.correo) === datos.correo)) {
             marcarError('correo', 'Ya existe una cuenta registrada con este correo.');
         }
 
@@ -116,6 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (!esValido) {
+            formMessage.style.color = 'var(--color-coral)';
             formMessage.textContent = 'Revisa los campos marcados en rojo.';
             return;
         }
@@ -134,9 +145,13 @@ document.addEventListener('DOMContentLoaded', () => {
             direccion: datos.direccion,
             region: datos.region,
             genero: datos.genero,
+            compras: [],
+            intentosFallidos: 0,
+            bloqueado: false,
         });
         guardarUsuarios(usuarios);
 
+        formMessage.style.color = 'var(--color-logo-dark)';
         formMessage.textContent = '¡Cuenta creada con éxito! Ya puedes iniciar sesión.';
         form.reset();
     });
