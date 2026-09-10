@@ -60,7 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const mostrarError = (idCampo, mensaje) => {
         const span = document.querySelector(`#error-${idCampo}`);
-        if (span) span.textContent = mensaje;
+        
+        if (span) span.textContent = mensaje,span.style.color = 'var(--color-coral)';
+
     };
 
     form.addEventListener('submit', (event) => {
@@ -83,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let esValido = true;
         const marcarError = (campo, mensaje) => {
             mostrarError(campo, mensaje);
+            
             esValido = false;
         };
 
@@ -122,12 +125,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!datos.confirmarPassword) {
             marcarError('confirmar-password', 'Confirma tu contraseña.');
         } else if (datos.password && datos.confirmarPassword !== datos.password) {
+            formMessage.style.color = 'var(--color-coral)';
             marcarError('confirmar-password', 'Las contraseñas no coinciden.');
         }
 
         if (!esValido) {
             formMessage.style.color = 'var(--color-coral)';
-            formMessage.textContent = 'Revisa los campos marcados en rojo.';
+            formMessage.textContent = '¡No se pudo crear la cuenta! Revisa los campos obligatorios(*).';
             return;
         }
 
