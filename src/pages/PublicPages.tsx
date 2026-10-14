@@ -1,6 +1,6 @@
 import { useMemo, useState, type FormEvent } from 'react';
 import { ProductCard } from '../components/ProductCard';
-import type { Product, User } from '../types';
+import type { Product, ProfileDetails, User } from '../types';
 
 interface ShopProps {
   products: Product[];
@@ -66,6 +66,88 @@ export function LoginPage({ onLogin }: Pick<AuthProps, 'onLogin'>) {
 }
 
 const regions = ['Arica y Parinacota', 'Tarapacá', 'Antofagasta', 'Atacama', 'Coquimbo', 'Valparaíso', 'Metropolitana de Santiago', "Libertador General Bernardo O'Higgins", 'Maule', 'Ñuble', 'Biobío', 'La Araucanía', 'Los Ríos', 'Los Lagos', 'Aysén del General Carlos Ibáñez del Campo', 'Magallanes y de la Antártica Chilena'];
+
+interface ProfilePageProps {
+  user: User;
+  onUpdate: (details: ProfileDetails) => string | null;
+}
+
+function calculateAge(dateOfBirth: string): number | null {
+  if (!dateOfBirth) return null;
+  const birthDate = new Date(`${dateOfBirth}T00:00:00`);
+  if (Number.isNaN(birthDate.getTime())) return null;
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  if (today.getMonth() < birthDate.getMonth() || (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())) age -= 1;
+  return age < 0 ? null : age;
+}
+
+export function ProfilePage({ user, onUpdate }: ProfilePageProps) {
+  const [details, setDetails] = useState<ProfileDetails>(() => ({
+    nombre: user.nombre,
+    apellido: user.apellido,
+    fechaNacimiento: user.fechaNacimiento,
+    correo: user.correo,
+    direccion: user.direccion,
+    region: user.region,
+    genero: user.genero,
+  }));
+  const [message, setMessage] = useState('');
+  const [success, setSuccess] = useState(false);
+  const age = calculateAge(details.fechaNacimiento);
+
+  function updateField<K extends keyof ProfileDetails>(field: K, value: ProfileDetails[K]) {
+    setDetails((current) => ({ ...current, [field]: value }));
+    setMessage('');
+    setSuccess(false);
+  }
+
+  function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (age === null || age < 14) {
+      setSuccess(false);
+      setMessage('La fecha debe ser válida y debes tener al menos 14 años.');
+      return;
+    }
+    const normalizedDetails = { ...details, correo: details.correo.trim().toLowerCase() };
+    const error = onUpdate(normalizedDetails);
+    if (error) {
+      setSuccess(false);
+      setMessage(error);
+      return;
+    }
+    setDetails(normalizedDetails);
+    setSuccess(true);
+    setMessage('Tu perfil se actualizó correctamente.');
+  }
+
+  return <main className="section auth-section profile-section"><div className="container auth-container">
+    <section className="auth-card auth-card--wide profile-card">
+      <p className="eyebrow">Cuenta personal</p><h1>Mi perfil</h1>
+      <p className="profile-intro">Consulta y actualiza tus datos personales. Tu rol no se puede cambiar desde esta pantalla.</p>
+      <form className="auth-form profile-form" onSubmit={submit}>
+        <div className="form-row">
+          <label className="form-group">Nombre<input autoComplete="given-name" value={details.nombre} onChange={(event) => updateField('nombre', event.target.value)} required /></label>
+          <label className="form-group">Apellido<input autoComplete="family-name" value={details.apellido} onChange={(event) => updateField('apellido', event.target.value)} required /></label>
+        </div>
+        <div className="form-row">
+          <label className="form-group">Fecha de nacimiento<input type="date" value={details.fechaNacimiento} onChange={(event) => updateField('fechaNacimiento', event.target.value)} required /></label>
+          <div className="profile-age" aria-live="polite"><span>Edad</span><strong>{age === null ? 'Ingresa una fecha válida' : `${age} ${age === 1 ? 'año' : 'años'}`}</strong></div>
+        </div>
+        <label className="form-group">Correo electrónico<input autoComplete="email" type="email" value={details.correo} onChange={(event) => updateField('correo', event.target.value)} required /></label>
+        <label className="form-group">Dirección<input autoComplete="street-address" value={details.direccion} onChange={(event) => updateField('direccion', event.target.value)} required /></label>
+        <div className="form-row">
+          <label className="form-group">Región<select value={details.region} onChange={(event) => updateField('region', event.target.value)} required><option value="" disabled>Selecciona tu región</option>{regions.map((region) => <option key={region}>{region}</option>)}</select></label>
+          <label className="form-group">Género<select value={details.genero} onChange={(event) => updateField('genero', event.target.value)}><option value="">Prefiero no indicarlo</option><option>Femenino</option><option>Masculino</option><option>No binario</option><option>Prefiero no decirlo</option></select></label>
+        </div>
+        <label className="form-group">Rol<input value={user.role} readOnly aria-describedby="profile-role-note" /></label>
+        <span id="profile-role-note" className="field-hint">El rol se administra según los permisos de la cuenta.</span>
+        <button className="button" type="submit">Guardar cambios</button>
+        {message && <p className={`form-message ${success ? 'form-message--success' : ''}`} role={success ? 'status' : 'alert'}>{message}</p>}
+      </form>
+    </section>
+  </div></main>;
+}
 
 export function RegisterPage({ onRegister }: Pick<AuthProps, 'onRegister'>) {
   const [message, setMessage] = useState('');

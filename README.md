@@ -17,6 +17,7 @@ npm run build
 - `index.html`: inicio, presentación de la clínica y contacto.
 - `catalogo.html`: catálogo con búsqueda, filtros, detalle y carrito.
 - `login.html` y `registro.html`: acceso y creación pública de cuentas cliente.
+- `perfil.html`: consulta y edición de datos personales para cualquier rol autenticado.
 - `admin.html`: gestión según el rol activo.
 
 ## Permisos

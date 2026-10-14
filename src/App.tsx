@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
 import { Header } from './components/Header';
 import { AdminPage } from './pages/AdminPage';
-import { CatalogPage, HomePage, LoginPage, RegisterPage } from './pages/PublicPages';
+import { CatalogPage, HomePage, LoginPage, ProfilePage, RegisterPage } from './pages/PublicPages';
 import { createId, getCart, getCategories, getProducts, getSession, getUsers, saveCart, saveCategories, saveProducts, saveSession, saveUsers } from './data/store';
-import type { CartItem, Notice, Order, Product, Role, User } from './types';
+import type { CartItem, Notice, Order, Product, ProfileDetails, Role, User } from './types';
 
 const money = (value: number) => `$${value.toLocaleString('es-CL')}`;
 
@@ -107,6 +107,18 @@ export default function App() {
     else updateUsers([...users, { ...account, id: createId('usr') }]);
   }
 
+  function updateProfile(details: ProfileDetails): string | null {
+    if (!user) return 'Inicia sesión para actualizar tu perfil.';
+    const correo = details.correo.trim().toLowerCase();
+    if (!correo.endsWith('@duoc.cl')) return 'Usa un correo institucional con dominio @duoc.cl.';
+    if (users.some((account) => account.id !== user.id && account.correo.toLowerCase() === correo)) return 'Ya existe una cuenta registrada con ese correo.';
+    const updatedUser = { ...user, ...details, correo };
+    updateUsers(users.map((account) => account.id === user.id ? updatedUser : account));
+    setUser(updatedUser);
+    saveSession(updatedUser);
+    return null;
+  }
+
   function saveManagedProduct(product: Product) {
     const exists = products.some((item) => item.id === product.id);
     updateProducts(exists ? products.map((item) => item.id === product.id ? product : item) : [...products, { ...product, id: createId('prod') }]);
@@ -116,7 +128,8 @@ export default function App() {
   const isCatalog = pathname.endsWith('/catalogo.html');
   const isLogin = pathname.endsWith('/login.html');
   const isRegister = pathname.endsWith('/registro.html');
-  document.title = isAdmin ? 'Panel de gestión — Veterinaria San Marcos' : isCatalog ? 'Catálogo — Veterinaria San Marcos' : isLogin ? 'Iniciar sesión — Veterinaria San Marcos' : isRegister ? 'Registro — Veterinaria San Marcos' : 'Veterinaria San Marcos';
+  const isProfile = pathname.endsWith('/perfil.html');
+  document.title = isAdmin ? 'Panel de gestión — Veterinaria San Marcos' : isCatalog ? 'Catálogo — Veterinaria San Marcos' : isLogin ? 'Iniciar sesión — Veterinaria San Marcos' : isRegister ? 'Registro — Veterinaria San Marcos' : isProfile ? 'Mi perfil — Veterinaria San Marcos' : 'Veterinaria San Marcos';
 
   return <>
     <Header user={user} cartCount={cartCount} onCartOpen={() => setCartOpen(true)} onOrdersOpen={() => setOrdersOpen(true)} onLogout={() => { saveSession(null); setUser(null); window.location.href = 'index.html'; }} />
@@ -128,7 +141,8 @@ export default function App() {
       : isCatalog ? <CatalogPage products={products} categories={categories} available={available} onAdd={addToCart} />
         : isLogin ? <LoginPage onLogin={login} />
           : isRegister ? <RegisterPage onRegister={register} />
-            : <HomePage products={products} available={available} onAdd={addToCart} />}
+            : isProfile ? user ? <ProfilePage user={user} onUpdate={updateProfile} /> : <main className="section"><div className="container access-denied"><h1>Inicia sesión para ver tu perfil</h1><p>El perfil personal está disponible para usuarios con sesión activa.</p><a className="button" href="login.html">Iniciar sesión</a></div></main>
+              : <HomePage products={products} available={available} onAdd={addToCart} />}
     <CartDrawer open={cartOpen} products={products} cart={cart} onClose={() => setCartOpen(false)} onChange={changeQuantity} onRemove={(id) => updateCart(cart.filter((item) => item.id !== id))} onCheckout={checkout} />
     {ordersOpen && user && <div className="modal-overlay" role="presentation" onClick={(event) => { if (event.target === event.currentTarget) setOrdersOpen(false); }}><section className="modal orders-modal" role="dialog" aria-modal="true" aria-labelledby="orders-title"><button className="modal-close" type="button" aria-label="Cerrar historial" onClick={() => setOrdersOpen(false)}>×</button><p className="service-category">Historial de pedidos</p><h2 id="orders-title">Mis compras</h2>{user.compras.length === 0 ? <p>Aún no has realizado ninguna compra con tu cuenta.</p> : <div className="orders-list">{[...user.compras].reverse().map((order) => <article className="order-card" key={order.idOrden}><div className="order-header"><strong>{order.idOrden}</strong><span>{order.fecha}</span></div><ul className="order-items-list">{order.items.map((item) => <li className="order-item-row" key={item.id}><span>{item.cantidad} × {item.nombre}</span><span>{money(item.subtotal)}</span></li>)}</ul><div className="order-total-row"><span>Total pagado</span><strong>{money(order.total)}</strong></div></article>)}</div>}</section></div>}
     {notice && <div className={`toast toast--${notice.kind}`} role="status">{notice.text}</div>}

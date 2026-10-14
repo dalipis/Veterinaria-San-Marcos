@@ -25,7 +25,7 @@ export function Header({ user, cartCount, onCartOpen, onOrdersOpen, onLogout }: 
           <a href="index.html">Inicio</a><a href="catalogo.html">Catálogo</a><a href="index.html#nosotros">Quiénes somos</a>
           {user && user.role !== 'cliente' && <a href="admin.html">Panel de gestión</a>}
           {!user ? <><a href="login.html">Iniciar sesión</a><a href="registro.html">Registrarse</a></> : (
-            <div className="account-menu"><span className="account-toggle">{user.nombre} · {roleLabel(user.role)}</span><button className="text-button" type="button" onClick={onOrdersOpen}>Mis compras</button><button className="text-button" type="button" onClick={onLogout}>Cerrar sesión</button></div>
+            <div className="account-menu"><span className="account-toggle">{user.nombre} · {roleLabel(user.role)}</span><a href="perfil.html">Mi perfil</a><button className="text-button" type="button" onClick={onOrdersOpen}>Mis compras</button><button className="text-button" type="button" onClick={onLogout}>Cerrar sesión</button></div>
           )}
           <a className="nav-contact" href="index.html#contacto">Agendar consulta</a>
           <button className="cart-toggle" type="button" onClick={onCartOpen} aria-label={`Abrir carrito, ${cartCount} productos`}>

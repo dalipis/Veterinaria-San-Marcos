@@ -1,5 +1,7 @@
 export type Role = 'administrador' | 'vendedor' | 'cliente';
 
+export type ProfileDetails = Pick<User, 'nombre' | 'apellido' | 'fechaNacimiento' | 'correo' | 'direccion' | 'region' | 'genero'>;
+
 export interface User {
   id: string;
   nombre: string;
