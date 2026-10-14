@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import type { Product, Role, User } from '../types';
 
 interface AdminPageProps {
@@ -180,5 +180,6 @@ interface ProductRowProps {
 
 function ProductRow({ product, isAdmin, onSave, onEdit, onDelete }: ProductRowProps) {
   const [stock, setStock] = useState(product.stock);
+  useEffect(() => setStock(product.stock), [product.stock]);
   return <tr><td><strong>{product.icono} {product.nombre}</strong><small>{product.presentacion}</small></td><td>{product.categoria}</td><td>${product.precio.toLocaleString('es-CL')}</td><td>{isAdmin ? product.stock : <form className="stock-edit" onSubmit={(event) => { event.preventDefault(); onSave({ ...product, stock: Number(stock) }); }}><input aria-label={`Stock de ${product.nombre}`} min="0" type="number" value={stock} onChange={(event) => setStock(Number(event.target.value))} /><button type="submit">Guardar</button></form>}</td><td>{isAdmin ? <div className="table-actions"><button className="table-action" type="button" onClick={onEdit}>Editar</button><button className="table-action table-action--danger" type="button" onClick={onDelete}>Eliminar</button></div> : <span className="role-note">Solo stock</span>}</td></tr>;
 }

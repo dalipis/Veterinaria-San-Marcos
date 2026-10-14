@@ -187,6 +187,10 @@
 }
 
 @media (min-width: 761px) and (max-width: 900px) {
+    .catalog-toolbar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .featured-grid,
     .specialists-grid,
     .products-grid {

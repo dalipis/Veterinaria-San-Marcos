@@ -24,9 +24,9 @@ export default function App() {
     return Math.max(0, (product?.stock ?? 0) - (cart.find((item) => item.id === id)?.cantidad ?? 0));
   };
 
-  function updateProducts(next: Product[]) { setProducts(next); saveProducts(next); }
-  function updateUsers(next: User[]) { setUsers(next); saveUsers(next); }
-  function updateCart(next: CartItem[]) { setCart(next); saveCart(next); }
+  function updateProducts(next: Product[]) { saveProducts(next); setProducts(next); }
+  function updateUsers(next: User[]) { saveUsers(next); setUsers(next); }
+  function updateCart(next: CartItem[]) { saveCart(next); setCart(next); }
   function notify(text: string, kind: Notice['kind'] = 'info') {
     setNotice({ text, kind });
     window.setTimeout(() => setNotice(null), 3500);
@@ -122,6 +122,12 @@ export default function App() {
   function saveManagedProduct(product: Product) {
     const exists = products.some((item) => item.id === product.id);
     updateProducts(exists ? products.map((item) => item.id === product.id ? product : item) : [...products, { ...product, id: createId('prod') }]);
+    const cartItem = cart.find((item) => item.id === product.id);
+    if (cartItem && cartItem.cantidad > product.stock) {
+      const nextCart = cart.flatMap((item) => item.id !== product.id ? [item] : product.stock > 0 ? [{ ...item, cantidad: product.stock }] : []);
+      updateCart(nextCart);
+      notify(product.stock > 0 ? `El carrito se ajustó al nuevo stock de ${product.nombre}.` : `${product.nombre} se quitó del carrito porque quedó sin stock.`, 'info');
+    }
   }
 
   const isAdmin = pathname.endsWith('/admin.html') || pathname === '/admin.html';
@@ -136,7 +142,7 @@ export default function App() {
     {isAdmin ? user && user.role !== 'cliente' ? <AdminPage user={user} users={users} products={products} categories={categories}
       onSaveProduct={saveManagedProduct} onSaveProducts={updateProducts} onDeleteProduct={(id) => { updateProducts(products.filter((item) => item.id !== id)); updateCart(cart.filter((item) => item.id !== id)); }}
       onSaveUser={saveManagedUser} onDeleteUser={(id) => updateUsers(users.filter((item) => item.id !== id))}
-      onSaveCategories={(next) => { setCategories(next); saveCategories(next); }} notify={notify} />
+      onSaveCategories={(next) => { saveCategories(next); setCategories(next); }} notify={notify} />
       : <main className="section"><div className="container access-denied"><h1>Acceso restringido</h1><p>El panel está disponible solo para cuentas de administración y ventas.</p><a className="button" href="login.html">Iniciar sesión con una cuenta autorizada</a></div></main>
       : isCatalog ? <CatalogPage products={products} categories={categories} available={available} onAdd={addToCart} />
         : isLogin ? <LoginPage onLogin={login} />
@@ -145,7 +151,7 @@ export default function App() {
               : <HomePage products={products} available={available} onAdd={addToCart} />}
     <CartDrawer open={cartOpen} products={products} cart={cart} onClose={() => setCartOpen(false)} onChange={changeQuantity} onRemove={(id) => updateCart(cart.filter((item) => item.id !== id))} onCheckout={checkout} />
     {ordersOpen && user && <div className="modal-overlay" role="presentation" onClick={(event) => { if (event.target === event.currentTarget) setOrdersOpen(false); }}><section className="modal orders-modal" role="dialog" aria-modal="true" aria-labelledby="orders-title"><button className="modal-close" type="button" aria-label="Cerrar historial" onClick={() => setOrdersOpen(false)}>×</button><p className="service-category">Historial de pedidos</p><h2 id="orders-title">Mis compras</h2>{user.compras.length === 0 ? <p>Aún no has realizado ninguna compra con tu cuenta.</p> : <div className="orders-list">{[...user.compras].reverse().map((order) => <article className="order-card" key={order.idOrden}><div className="order-header"><strong>{order.idOrden}</strong><span>{order.fecha}</span></div><ul className="order-items-list">{order.items.map((item) => <li className="order-item-row" key={item.id}><span>{item.cantidad} × {item.nombre}</span><span>{money(item.subtotal)}</span></li>)}</ul><div className="order-total-row"><span>Total pagado</span><strong>{money(order.total)}</strong></div></article>)}</div>}</section></div>}
-    {notice && <div className={`toast toast--${notice.kind}`} role="status">{notice.text}</div>}
+    {notice && <div className={`toast toast--${notice.kind}`} role={notice.kind === 'error' ? 'alert' : 'status'}>{notice.text}</div>}
   </>;
 }
 

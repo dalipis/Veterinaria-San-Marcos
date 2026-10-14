@@ -27,4 +27,9 @@ npm run build
 - Cliente: navega el catálogo y realiza compras.
 - Cualquier usuario registrado en el flujo público recibe el rol cliente.
 
+## Interfaz y persistencia
+
+- El CSS propio adapta el catálogo a una columna en móviles, dos en tablets y tres en pantallas grandes.
+- Usuarios, productos, categorías, carrito y sesión se conservan en `localStorage`. Las compras actualizan stock e historial; si una edición reduce el stock por debajo de lo reservado en el carrito, la cantidad se ajusta o el producto se retira si queda sin stock.
+
 Para probar el panel localmente: `admin@duoc.cl` / `Admin123` o `vendedor@duoc.cl` / `Vendedor123`. Las cuentas se crean automáticamente si no existen. Los datos de prueba y credenciales se guardan solo en el navegador; este prototipo no implementa seguridad de producción.

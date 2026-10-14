@@ -72,7 +72,7 @@
     box-shadow: 0 10px 24px rgba(25, 59, 70, 0.07);
     display: grid;
     gap: 22px;
-    grid-template-columns: minmax(220px, 0.8fr) minmax(280px, 1.2fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     margin-bottom: 30px;
     padding: 20px 24px;
 }
@@ -94,6 +94,22 @@
     font: inherit;
     padding: 11px 12px;
     width: 100%;
+}
+
+.catalog-filter input[type='search'] {
+    background: #fbfefe;
+    border: 1px solid #c9e3e6;
+    border-radius: 9px;
+    color: var(--color-ink);
+    font: inherit;
+    padding: 11px 12px;
+    width: 100%;
+}
+
+.catalog-filter input[type='search']:focus {
+    border-color: var(--color-logo);
+    box-shadow: 0 0 0 3px #d8f2f4;
+    outline: 0;
 }
 
 .catalog-filter select:focus {

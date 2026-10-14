@@ -18,10 +18,10 @@ export function Header({ user, cartCount, onCartOpen, onOrdersOpen, onLogout }: 
           <img className="brand-logo" src="Imagenes/Logo%20veterinaria.png" alt="" />
           <span>Veterinaria <strong>San Marcos</strong></span>
         </a>
-        <button className="nav-toggle" type="button" aria-label="Abrir navegación" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+        <button className="nav-toggle" type="button" aria-label={menuOpen ? 'Cerrar navegación' : 'Abrir navegación'} aria-controls="primary-navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
           <span className="nav-toggle-line" /><span className="nav-toggle-line" /><span className="nav-toggle-line" />
         </button>
-        <nav className={`main-nav ${menuOpen ? 'main-nav--open' : ''}`} aria-label="Navegación principal">
+        <nav id="primary-navigation" className={`main-nav ${menuOpen ? 'main-nav--open' : ''}`} aria-label="Navegación principal">
           <a href="index.html">Inicio</a><a href="catalogo.html">Catálogo</a><a href="index.html#nosotros">Quiénes somos</a>
           {user && user.role !== 'cliente' && <a href="admin.html">Panel de gestión</a>}
           {!user ? <><a href="login.html">Iniciar sesión</a><a href="registro.html">Registrarse</a></> : (
