@@ -1,0 +1,67 @@
+/* =======================================================
+   Global styles and design tokens
+   ======================================================= */
+:root {
+    --color-logo: #1594a3;
+    --color-logo-dark: #0d6875;
+    --color-coral: #ef7965;
+    --color-ink: #193b46;
+    --color-muted: #627980;
+    --color-background: #f4fbfc;
+    --color-soft-blue: #e5f5f7;
+    --color-white: #ffffff;
+    --shadow-soft: 0 16px 36px rgba(25, 59, 70, 0.1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background: var(--color-background);
+    color: var(--color-ink);
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    line-height: 1.6;
+}
+
+.container {
+    margin: 0 auto;
+    max-width: 1160px;
+    padding: 0 24px;
+}
+
+img {
+    max-width: 100%;
+}
+
+a {
+    color: inherit;
+}
+
+/* Sections */
+.section {
+    padding: 78px 0;
+}
+
+.section-heading {
+    margin-bottom: 40px;
+    max-width: 700px;
+}
+
+.section-heading .eyebrow {
+    margin-bottom: 12px;
+}
+
+.section-heading h2 {
+    margin-bottom: 16px;
+}
+
+.section-heading p {
+    color: var(--color-muted);
+}

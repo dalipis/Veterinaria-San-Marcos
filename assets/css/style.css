@@ -1,0 +1,13 @@
+/* =======================================================
+   Main entry point: imports all CSS modules.
+   ======================================================= */
+@import url('global.css');
+@import url('navbar.css');
+@import url('hero.css');
+@import url('cta.css');
+@import url('cards.css');
+@import url('footer.css');
+@import url('catalog.css');
+@import url('about.css');
+@import url('contact.css');
+@import url('responsive.css');

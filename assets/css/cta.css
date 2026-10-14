@@ -1,0 +1,32 @@
+/* =======================================================
+   CTA / button styling
+   ======================================================= */
+.button {
+    background: var(--color-coral);
+    border: 0;
+    border-radius: 999px;
+    box-shadow: 0 9px 18px rgba(239, 121, 101, 0.22);
+    color: var(--color-white);
+    cursor: pointer;
+    display: inline-block;
+    font: inherit;
+    font-weight: bold;
+    margin-top: 30px;
+    padding: 14px 21px;
+    text-decoration: none;
+    transition: background-color 180ms ease, transform 180ms ease;
+}
+
+.button:hover,
+.button:focus-visible {
+    background: #d9604d;
+    transform: translateY(-2px);
+}
+
+.product-detail-btn,
+.product-add-btn,
+.product-card-actions .product-detail-btn {
+    border-radius: 999px;
+    font: inherit;
+    font-weight: bold;
+}
