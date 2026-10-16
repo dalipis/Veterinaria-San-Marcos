@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { Header } from './components/Header';
 import { AdminPage } from './pages/AdminPage';
 import { CatalogPage, HomePage, LoginPage, ProfilePage, RegisterPage } from './pages/PublicPages';
 import { createId, getCart, getCategories, getProducts, getSession, getUsers, saveCart, saveCategories, saveProducts, saveSession, saveUsers } from './data/store';
-import type { CartItem, Notice, Order, Product, ProfileDetails, Role, User } from './types';
+import type { CartItem, Notice, Order, Product, ProfileDetails, User } from './types';
 
 const money = (value: number) => `$${value.toLocaleString('es-CL')}`;
 
@@ -16,7 +17,24 @@ export default function App() {
   const [notice, setNotice] = useState<Notice | null>(null);
   const [cartOpen, setCartOpen] = useState(false);
   const [ordersOpen, setOrdersOpen] = useState(false);
-  const pathname = window.location.pathname.toLowerCase();
+  const location = useLocation();
+  const { pathname } = location;
+  const navigate = useNavigate();
+  const noticeTimeout = useRef<number | null>(null);
+  const normalizedPath = pathname.toLowerCase().replace(/\.html$/, '') || '/';
+
+  useEffect(() => {
+    if (!location.hash) return;
+    const targetId = decodeURIComponent(location.hash.slice(1));
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [location.pathname, location.hash]);
+
+  useEffect(() => () => {
+    if (noticeTimeout.current !== null) window.clearTimeout(noticeTimeout.current);
+  }, []);
 
   const cartCount = useMemo(() => cart.reduce((total, item) => total + item.cantidad, 0), [cart]);
   const available = (id: string) => {
@@ -28,8 +46,12 @@ export default function App() {
   function updateUsers(next: User[]) { saveUsers(next); setUsers(next); }
   function updateCart(next: CartItem[]) { saveCart(next); setCart(next); }
   function notify(text: string, kind: Notice['kind'] = 'info') {
+    if (noticeTimeout.current !== null) window.clearTimeout(noticeTimeout.current);
     setNotice({ text, kind });
-    window.setTimeout(() => setNotice(null), 3500);
+    noticeTimeout.current = window.setTimeout(() => {
+      setNotice(null);
+      noticeTimeout.current = null;
+    }, 3500);
   }
 
   function addToCart(product: Product) {
@@ -51,7 +73,7 @@ export default function App() {
   function checkout() {
     if (!user) {
       notify('Inicia sesión para finalizar la compra.', 'error');
-      window.setTimeout(() => { window.location.href = 'login.html'; }, 900);
+      window.setTimeout(() => navigate('/login'), 900);
       return;
     }
     if (!cart.length) return;
@@ -130,28 +152,37 @@ export default function App() {
     }
   }
 
-  const isAdmin = pathname.endsWith('/admin.html') || pathname === '/admin.html';
-  const isCatalog = pathname.endsWith('/catalogo.html');
-  const isLogin = pathname.endsWith('/login.html');
-  const isRegister = pathname.endsWith('/registro.html');
-  const isProfile = pathname.endsWith('/perfil.html');
-  document.title = isAdmin ? 'Panel de gestión — Veterinaria San Marcos' : isCatalog ? 'Catálogo — Veterinaria San Marcos' : isLogin ? 'Iniciar sesión — Veterinaria San Marcos' : isRegister ? 'Registro — Veterinaria San Marcos' : isProfile ? 'Mi perfil — Veterinaria San Marcos' : 'Veterinaria San Marcos';
+  const pageTitle = normalizedPath === '/admin' ? 'Panel de gestión — Veterinaria San Marcos' : normalizedPath === '/catalogo' ? 'Catálogo — Veterinaria San Marcos' : normalizedPath === '/login' ? 'Iniciar sesión — Veterinaria San Marcos' : normalizedPath === '/registro' ? 'Registro — Veterinaria San Marcos' : normalizedPath === '/perfil' ? 'Mi perfil — Veterinaria San Marcos' : 'Veterinaria San Marcos';
+  useEffect(() => { document.title = pageTitle; }, [pageTitle]);
+
+  const homePage = <HomePage products={products} />;
+  const adminPage = user && user.role !== 'cliente' ? <AdminPage user={user} users={users} products={products} categories={categories}
+    onSaveProduct={saveManagedProduct} onSaveProducts={updateProducts} onDeleteProduct={(id) => { updateProducts(products.filter((item) => item.id !== id)); updateCart(cart.filter((item) => item.id !== id)); }}
+    onSaveUser={saveManagedUser} onDeleteUser={(id) => updateUsers(users.filter((item) => item.id !== id))}
+    onSaveCategories={(next) => { saveCategories(next); setCategories(next); }} notify={notify} />
+    : <main className="section"><div className="container access-denied"><h1>Acceso restringido</h1><p>El panel está disponible solo para cuentas de administración y ventas.</p><Link className="button" to="/login">Iniciar sesión con una cuenta autorizada</Link></div></main>;
+  const profilePage = user ? <ProfilePage user={user} onUpdate={updateProfile} /> : <main className="section"><div className="container access-denied"><h1>Inicia sesión para ver tu perfil</h1><p>El perfil personal está disponible para usuarios con sesión activa.</p><Link className="button" to="/login">Iniciar sesión</Link></div></main>;
 
   return <>
-    <Header user={user} cartCount={cartCount} onCartOpen={() => setCartOpen(true)} onOrdersOpen={() => setOrdersOpen(true)} onLogout={() => { saveSession(null); setUser(null); window.location.href = 'index.html'; }} />
-    {isAdmin ? user && user.role !== 'cliente' ? <AdminPage user={user} users={users} products={products} categories={categories}
-      onSaveProduct={saveManagedProduct} onSaveProducts={updateProducts} onDeleteProduct={(id) => { updateProducts(products.filter((item) => item.id !== id)); updateCart(cart.filter((item) => item.id !== id)); }}
-      onSaveUser={saveManagedUser} onDeleteUser={(id) => updateUsers(users.filter((item) => item.id !== id))}
-      onSaveCategories={(next) => { saveCategories(next); setCategories(next); }} notify={notify} />
-      : <main className="section"><div className="container access-denied"><h1>Acceso restringido</h1><p>El panel está disponible solo para cuentas de administración y ventas.</p><a className="button" href="login.html">Iniciar sesión con una cuenta autorizada</a></div></main>
-      : isCatalog ? <CatalogPage products={products} categories={categories} available={available} onAdd={addToCart} />
-        : isLogin ? <LoginPage onLogin={login} />
-          : isRegister ? <RegisterPage onRegister={register} />
-            : isProfile ? user ? <ProfilePage user={user} onUpdate={updateProfile} /> : <main className="section"><div className="container access-denied"><h1>Inicia sesión para ver tu perfil</h1><p>El perfil personal está disponible para usuarios con sesión activa.</p><a className="button" href="login.html">Iniciar sesión</a></div></main>
-              : <HomePage products={products} available={available} onAdd={addToCart} />}
+    <Header user={user} cartCount={cartCount} onCartOpen={() => setCartOpen(true)} onOrdersOpen={() => setOrdersOpen(true)} onLogout={() => { saveSession(null); setUser(null); navigate('/'); }} />
+    <Routes>
+      <Route path="/" element={homePage} />
+      <Route path="/index.html" element={homePage} />
+      <Route path="/catalogo" element={<CatalogPage products={products} categories={categories} available={available} onAdd={addToCart} />} />
+      <Route path="/catalogo.html" element={<CatalogPage products={products} categories={categories} available={available} onAdd={addToCart} />} />
+      <Route path="/admin" element={adminPage} />
+      <Route path="/admin.html" element={adminPage} />
+      <Route path="/login" element={<LoginPage onLogin={login} />} />
+      <Route path="/login.html" element={<LoginPage onLogin={login} />} />
+      <Route path="/registro" element={<RegisterPage onRegister={register} />} />
+      <Route path="/registro.html" element={<RegisterPage onRegister={register} />} />
+      <Route path="/perfil" element={profilePage} />
+      <Route path="/perfil.html" element={profilePage} />
+      <Route path="*" element={homePage} />
+    </Routes>
     <CartDrawer open={cartOpen} products={products} cart={cart} onClose={() => setCartOpen(false)} onChange={changeQuantity} onRemove={(id) => updateCart(cart.filter((item) => item.id !== id))} onCheckout={checkout} />
-    {ordersOpen && user && <div className="modal-overlay" role="presentation" onClick={(event) => { if (event.target === event.currentTarget) setOrdersOpen(false); }}><section className="modal orders-modal" role="dialog" aria-modal="true" aria-labelledby="orders-title"><button className="modal-close" type="button" aria-label="Cerrar historial" onClick={() => setOrdersOpen(false)}>×</button><p className="service-category">Historial de pedidos</p><h2 id="orders-title">Mis compras</h2>{user.compras.length === 0 ? <p>Aún no has realizado ninguna compra con tu cuenta.</p> : <div className="orders-list">{[...user.compras].reverse().map((order) => <article className="order-card" key={order.idOrden}><div className="order-header"><strong>{order.idOrden}</strong><span>{order.fecha}</span></div><ul className="order-items-list">{order.items.map((item) => <li className="order-item-row" key={item.id}><span>{item.cantidad} × {item.nombre}</span><span>{money(item.subtotal)}</span></li>)}</ul><div className="order-total-row"><span>Total pagado</span><strong>{money(order.total)}</strong></div></article>)}</div>}</section></div>}
-    {notice && <div className={`toast toast--${notice.kind}`} role={notice.kind === 'error' ? 'alert' : 'status'}>{notice.text}</div>}
+    {ordersOpen && user && <div className="modal-overlay" role="presentation" onClick={(event) => { if (event.target === event.currentTarget) setOrdersOpen(false); }}><section className="site-modal orders-modal" role="dialog" aria-modal="true" aria-labelledby="orders-title"><button className="modal-close" type="button" aria-label="Cerrar historial" onClick={() => setOrdersOpen(false)}>×</button><p className="service-category">Historial de pedidos</p><h2 id="orders-title">Mis compras</h2>{user.compras.length === 0 ? <p>Aún no has realizado ninguna compra con tu cuenta.</p> : <div className="orders-list">{[...user.compras].reverse().map((order) => <article className="order-card" key={order.idOrden}><div className="order-header"><strong>{order.idOrden}</strong><span>{order.fecha}</span></div><ul className="order-items-list">{order.items.map((item) => <li className="order-item-row" key={item.id}><span>{item.cantidad} × {item.nombre}</span><span>{money(item.subtotal)}</span></li>)}</ul><div className="order-total-row"><span>Total pagado</span><strong>{money(order.total)}</strong></div></article>)}</div>}</section></div>}
+    {notice && <div className={`app-toast app-toast--${notice.kind}`} role={notice.kind === 'error' ? 'alert' : 'status'}>{notice.text}</div>}
   </>;
 }
 
@@ -176,3 +207,4 @@ function CartDrawer({ open, products, cart, onClose, onChange, onRemove, onCheck
     </aside>
   </>;
 }
+

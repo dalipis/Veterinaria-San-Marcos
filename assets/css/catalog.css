@@ -265,7 +265,7 @@
     display: none;
 }
 
-.modal {
+.site-modal {
     background: var(--color-white);
     border-radius: 18px;
     box-shadow: var(--shadow-soft);

@@ -1,4 +1,5 @@
 import { useMemo, useState, type FormEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ProductCard } from '../components/ProductCard';
 import type { Product, ProfileDetails, User } from '../types';
 
@@ -9,14 +10,14 @@ interface ShopProps {
   onAdd: (product: Product) => void;
 }
 
-export function HomePage({ products, available, onAdd }: Omit<ShopProps, 'categories'>) {
+export function HomePage({ products }: Pick<ShopProps, 'products'>) {
   const [message, setMessage] = useState('');
   const featured = products.slice(2, 5);
   return <main>
     <section className="hero" id="inicio"><div className="container hero-content">
       <p className="eyebrow">Desde Rancagua, cuidamos lo que más quieres</p><h1>Salud y bienestar para cada compañero de vida.</h1>
       <p>Desde 2009 acompañamos a familias de la Región de O'Higgins con atención veterinaria cercana y responsable.</p>
-      <a className="button" href="catalogo.html">Ver catálogo de productos</a>
+      <Link className="button" to="/catalogo">Ver catálogo de productos</Link>
       <div className="home-featured"><p className="eyebrow">Productos destacados</p><div className="featured-grid">{featured.map((product) => <article className="service-card" key={product.id}><div className="service-icon">{product.icono}</div><p className="service-category">{product.categoria}</p><h3>{product.nombre}</h3><p>{product.principioActivo}</p><div className="service-details"><span>{product.especie}</span><strong>${product.precio.toLocaleString('es-CL')}</strong></div></article>)}</div></div>
     </div></section>
     <section className="section specialists-section"><div className="container"><div className="section-heading"><p className="eyebrow">Nuestro equipo</p><h2>Profesionales que cuidan a tu mascota</h2><p>Atención cercana y responsable para cada familia.</p></div><div className="specialists-grid">
@@ -29,7 +30,7 @@ export function HomePage({ products, available, onAdd }: Omit<ShopProps, 'catego
       <iframe title="Mapa de Rancagua" src="https://www.google.com/maps?q=Rancagua,Chile&output=embed" width="600" height="450" loading="lazy" />
       <form className="contact-form" onSubmit={(event: FormEvent<HTMLFormElement>) => { event.preventDefault(); setMessage('Gracias por escribirnos. Te contactaremos pronto.'); event.currentTarget.reset(); }}><label className="form-group">Nombre<input name="nombre" required /></label><label className="form-group">Correo electrónico<input name="email" type="email" required /></label><label className="form-group">Mensaje<textarea name="mensaje" required /></label><button className="button" type="submit">Enviar consulta</button>{message && <p role="status">{message}</p>}</form>
     </div></div></section>
-    <footer className="site-footer"><div className="container"><p>Veterinaria San Marcos · Rancagua</p><p>DSY1104 · 2026</p><a href="catalogo.html">Catálogo</a></div></footer>
+    <footer className="site-footer"><div className="container"><p>Veterinaria San Marcos · Rancagua</p><Link to="/catalogo">Catálogo</Link></div></footer>
   </main>;
 }
 
@@ -44,7 +45,7 @@ export function CatalogPage({ products, categories, available, onAdd }: ShopProp
     <div className="catalog-hero"><div className="catalog-hero-copy"><p className="eyebrow">Cuidado animal, elegido con cariño</p><h1>Encuentra lo que tu mascota necesita.</h1><p>Productos seleccionados para acompañar la salud y el bienestar de perros y gatos.</p></div><div className="catalog-hero-mark" aria-hidden="true">🐾</div></div>
     <div className="catalog-toolbar"><label className="catalog-filter">Buscar producto<input type="search" placeholder="Nombre o principio activo" value={query} onChange={(event) => setQuery(event.target.value)} /></label><label className="catalog-filter">Categoría<select value={category} onChange={(event) => setCategory(event.target.value)}><option value="TODAS">Todas las categorías</option>{categories.map((item) => <option key={item}>{item}</option>)}</select></label><label className="catalog-filter catalog-filter--price">Precio máximo <span>${maxPrice.toLocaleString('es-CL')}</span><input type="range" min="3000" max="30000" step="1000" value={maxPrice} onChange={(event) => setMaxPrice(Number(event.target.value))} /></label></div>
     {filtered.length ? <div className="products-grid">{filtered.map((product) => <ProductCard key={product.id} product={product} available={available(product.id)} onDetails={setSelected} onAdd={onAdd} />)}</div> : <p className="empty-state">No se encontraron productos con esos filtros.</p>}
-    {selected && <div className="modal-overlay" role="presentation" onClick={(event) => { if (event.target === event.currentTarget) setSelected(null); }}><section className="modal" role="dialog" aria-modal="true" aria-labelledby="detail-title"><button className="modal-close" type="button" aria-label="Cerrar detalle" onClick={() => setSelected(null)}>×</button><div className="modal-icon">{selected.icono}</div><p className="service-category">{selected.categoria}</p><h2 id="detail-title">{selected.nombre}</h2><p>{selected.principioActivo} · Presentación: {selected.presentacion}</p><p>{selected.especie} · Stock: {available(selected.id)}</p><strong>${selected.precio.toLocaleString('es-CL')}</strong><p><button className="button" type="button" disabled={available(selected.id) <= 0} onClick={() => onAdd(selected)}>Agregar al carrito</button></p></section></div>}
+    {selected && <div className="modal-overlay" role="presentation" onClick={(event) => { if (event.target === event.currentTarget) setSelected(null); }}><section className="site-modal" role="dialog" aria-modal="true" aria-labelledby="detail-title"><button className="modal-close" type="button" aria-label="Cerrar detalle" onClick={() => setSelected(null)}>×</button><div className="modal-icon">{selected.icono}</div><p className="service-category">{selected.categoria}</p><h2 id="detail-title">{selected.nombre}</h2><p>{selected.principioActivo} · Presentación: {selected.presentacion}</p><p>{selected.especie} · Stock: {available(selected.id)}</p><strong>${selected.precio.toLocaleString('es-CL')}</strong><p><button className="button" type="button" disabled={available(selected.id) <= 0} onClick={() => onAdd(selected)}>Agregar al carrito</button></p></section></div>}
   </div></main>;
 }
 
@@ -55,14 +56,15 @@ interface AuthProps {
 
 export function LoginPage({ onLogin }: Pick<AuthProps, 'onLogin'>) {
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const result = onLogin(String(data.get('correo')).trim().toLowerCase(), String(data.get('password')));
-    if (result.user) window.location.href = result.user.role === 'cliente' ? 'index.html' : 'admin.html';
+    if (result.user) navigate(result.user.role === 'cliente' ? '/' : '/admin');
     else setMessage(result.message);
   }
-  return <main className="section auth-section"><div className="container auth-container"><section className="auth-card"><p className="eyebrow">Acceso a la plataforma</p><h1>Iniciar sesión</h1><form className="auth-form" onSubmit={submit}><label className="form-group">Correo electrónico<input name="correo" type="email" autoComplete="username" required /></label><label className="form-group">Contraseña<input name="password" type="password" autoComplete="current-password" required /></label><button className="button" type="submit">Ingresar</button>{message && <p className="form-message" role="alert">{message}</p>}</form><p className="demo-access">Cuentas de prueba: admin@duoc.cl / Admin123 · vendedor@duoc.cl / Vendedor123</p><p className="auth-switch">¿Aún no tienes cuenta? <a href="registro.html">Regístrate aquí</a></p></section></div></main>;
+  return <main className="section auth-section"><div className="container auth-container"><section className="auth-card"><p className="eyebrow">Acceso a la plataforma</p><h1>Iniciar sesión</h1><form className="auth-form" onSubmit={submit}><label className="form-group">Correo electrónico<input name="correo" type="email" autoComplete="username" required /></label><label className="form-group">Contraseña<input name="password" type="password" autoComplete="current-password" required /></label><button className="button" type="submit">Ingresar</button>{message && <p className="form-message" role="alert">{message}</p>}</form><p className="demo-access">Cuentas de prueba: admin@duoc.cl / Admin123 · vendedor@duoc.cl / Vendedor123</p><p className="auth-switch">¿Aún no tienes cuenta? <Link to="/registro">Regístrate aquí</Link></p></section></div></main>;
 }
 
 const regions = ['Arica y Parinacota', 'Tarapacá', 'Antofagasta', 'Atacama', 'Coquimbo', 'Valparaíso', 'Metropolitana de Santiago', "Libertador General Bernardo O'Higgins", 'Maule', 'Ñuble', 'Biobío', 'La Araucanía', 'Los Ríos', 'Los Lagos', 'Aysén del General Carlos Ibáñez del Campo', 'Magallanes y de la Antártica Chilena'];

@@ -9,16 +9,27 @@ Requiere Node.js 20.19+ o 22.12+ y npm.
 ```sh
 npm install
 npm run dev
+npm run lint
 npm run build
 ```
 
+`npm run lint` ejecuta ESLint sobre el código TypeScript y React. `npm run build` verifica TypeScript y genera el sitio de producción en `dist/`.
+
+## Organización
+
+- `src/components/`: componentes compartidos de la interfaz.
+- `src/pages/`: páginas del catálogo, inicio, autenticación, perfil y gestión.
+- `src/data/`: datos iniciales y persistencia local.
+- `src/styles/` y `assets/css/`: estilos de la aplicación.
+- Bootstrap se carga desde `src/main.tsx`; los estilos propios se importan después.
+
 ## Rutas
 
-- `index.html`: inicio, presentación de la clínica y contacto.
-- `catalogo.html`: catálogo con búsqueda, filtros, detalle y carrito.
-- `login.html` y `registro.html`: acceso y creación pública de cuentas cliente.
-- `perfil.html`: consulta y edición de datos personales para cualquier rol autenticado.
-- `admin.html`: gestión según el rol activo.
+- `/`: inicio, presentación de la clínica y contacto (`index.html` también funciona como alias).
+- `/catalogo`: catálogo con búsqueda, filtros, detalle y carrito (`catalogo.html` también funciona como alias).
+- `/login` y `/registro`: acceso y creación pública de cuentas cliente; se conservan los alias `.html`.
+- `/perfil`: consulta y edición de datos personales para cualquier rol autenticado (`perfil.html` también funciona como alias).
+- `/admin`: gestión según el rol activo (`admin.html` también funciona como alias).
 
 ## Permisos
 

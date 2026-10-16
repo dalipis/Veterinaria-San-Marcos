@@ -1,4 +1,5 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import type { Product, Role, User } from '../types';
 
 interface AdminPageProps {
@@ -86,7 +87,7 @@ export function AdminPage({ user, users, products, categories, onSaveProduct, on
       <div className="container">
         <div className="admin-heading">
           <div><p className="eyebrow">Gestión interna</p><h1>Panel de {isAdmin ? 'administración' : 'ventas'}</h1><p>Sesión: {user.nombre} {user.apellido} · {user.role}</p></div>
-          <a className="button button--outline" href="catalogo.html">Ver tienda</a>
+          <Link className="button button--outline" to="/catalogo">Ver tienda</Link>
         </div>
         <div className="admin-summary">
           <div><span>Productos activos</span><strong>{products.length}</strong></div>
@@ -119,7 +120,7 @@ export function AdminPage({ user, users, products, categories, onSaveProduct, on
               <div className="admin-actions"><button className="button" type="submit">Guardar producto</button><button className="button button--outline" type="button" onClick={() => setEditing(null)}>Cancelar</button></div>
             </form>}
             <div className="table-scroll"><table className="admin-table"><thead><tr><th>Producto</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Acciones</th></tr></thead><tbody>
-              {products.map((product) => <ProductRow key={product.id} product={product} isAdmin={isAdmin} onSave={onSaveProduct} onEdit={() => setEditing(product)} onDelete={() => { if (window.confirm(`¿Eliminar ${product.nombre}?`)) onDeleteProduct(product.id); }} />)}
+              {products.map((product) => <ProductRow key={`${product.id}-${product.stock}`} product={product} isAdmin={isAdmin} onSave={onSaveProduct} onEdit={() => setEditing(product)} onDelete={() => { if (window.confirm(`¿Eliminar ${product.nombre}?`)) onDeleteProduct(product.id); }} />)}
             </tbody></table></div>
             {!isAdmin && <form className="admin-form seller-user-form" onSubmit={addUser}>
               <h3>Crear cuenta cliente</h3><p>Las cuentas creadas desde ventas siempre reciben el rol cliente.</p><div className="form-row">
@@ -180,6 +181,5 @@ interface ProductRowProps {
 
 function ProductRow({ product, isAdmin, onSave, onEdit, onDelete }: ProductRowProps) {
   const [stock, setStock] = useState(product.stock);
-  useEffect(() => setStock(product.stock), [product.stock]);
   return <tr><td><strong>{product.icono} {product.nombre}</strong><small>{product.presentacion}</small></td><td>{product.categoria}</td><td>${product.precio.toLocaleString('es-CL')}</td><td>{isAdmin ? product.stock : <form className="stock-edit" onSubmit={(event) => { event.preventDefault(); onSave({ ...product, stock: Number(stock) }); }}><input aria-label={`Stock de ${product.nombre}`} min="0" type="number" value={stock} onChange={(event) => setStock(Number(event.target.value))} /><button type="submit">Guardar</button></form>}</td><td>{isAdmin ? <div className="table-actions"><button className="table-action" type="button" onClick={onEdit}>Editar</button><button className="table-action table-action--danger" type="button" onClick={onDelete}>Eliminar</button></div> : <span className="role-note">Solo stock</span>}</td></tr>;
 }
