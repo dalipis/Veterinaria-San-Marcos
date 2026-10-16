@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Header } from './components/Header';
 import { AdminPage } from './pages/AdminPage';
 import { CatalogPage, CategoryPage, CheckoutPage, CheckoutResultPage, HomePage, LoginPage, OffersPage, RegisterPage } from './pages/PublicPages';
@@ -26,7 +26,21 @@ export default function App() {
   const [notice, setNotice] = useState<Notice | null>(null);
   const [cartOpen, setCartOpen] = useState(false);
   const [ordersOpen, setOrdersOpen] = useState(false);
-  const pathname = window.location.pathname.toLowerCase();
+  const pathname = window.location.pathname;
+  const noticeTimeout = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!window.location.hash) return;
+    const targetId = decodeURIComponent(window.location.hash.slice(1));
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [pathname]);
+
+  useEffect(() => () => {
+    if (noticeTimeout.current !== null) window.clearTimeout(noticeTimeout.current);
+  }, []);
 
   const cartCount = useMemo(() => cart.reduce((total, item) => total + item.cantidad, 0), [cart]);
   const available = (id: string) => {
@@ -69,8 +83,12 @@ export default function App() {
   function updateUsers(next: User[]) { setUsers(next); saveUsers(next); }
   function updateCart(next: CartItem[]) { setCart(next); saveCart(next); }
   function notify(text: string, kind: Notice['kind'] = 'info') {
+    if (noticeTimeout.current !== null) window.clearTimeout(noticeTimeout.current);
     setNotice({ text, kind });
-    window.setTimeout(() => setNotice(null), 3500);
+    noticeTimeout.current = window.setTimeout(() => {
+      setNotice(null);
+      noticeTimeout.current = null;
+    }, 3500);
   }
 
   function addToCart(product: Product) {
@@ -249,3 +267,4 @@ function CartDrawer({ open, products, cart, onClose, onChange, onRemove, onCheck
     </aside>
   </>;
 }
+

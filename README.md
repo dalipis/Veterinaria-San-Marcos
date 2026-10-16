@@ -9,6 +9,7 @@ Requiere Node.js 20.19+ o 22.12+ y npm.
 ```sh
 npm install
 npm run dev
+npm run lint
 npm run build
 ```
 
@@ -19,7 +20,6 @@ npm run build
 - `src/`: aplicación React, componentes, páginas, tipos, datos y estilos activos.
 - `src/styles/legacy/`: hojas CSS del diseño original, importadas por la aplicación mientras se conserva ese estilo.
 - `public/images/`: imágenes estáticas servidas directamente por Vite.
-- `legacy/js/`: scripts del template anterior, conservados como referencia; la aplicación activa usa React.
 - `docs/requisitos/`: pauta, anexo, instrumento y planilla entregados para el proyecto.
 - `package.json` y `package-lock.json` permanecen en la raíz como archivos de gestión del proyecto.
 
