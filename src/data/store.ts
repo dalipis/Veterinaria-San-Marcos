@@ -1,4 +1,4 @@
-import type { CartItem, Product, Role, User } from '../types';
+import type { CartItem, CheckoutResult, Product, Role, User } from '../types';
 
 const keys = {
   users: 'vsm_usuarios',
@@ -6,6 +6,8 @@ const keys = {
   products: 'vsm_productos',
   cart: 'vsm_carrito',
   categories: 'vsm_categorias',
+  checkoutResult: 'vsm_resultado_compra',
+  offerMigration: 'vsm_migracion_ofertas_v1',
 };
 
 export const defaultCategories = [
@@ -16,15 +18,15 @@ export const defaultCategories = [
 export const initialProducts: Product[] = [
   { id: 'ME001', categoria: 'Antibióticos', nombre: 'Amoxibay 250mg', principioActivo: 'Amoxicilina', presentacion: 'Blíster 10 comp.', especie: 'Perro / Gato', stock: 45, precio: 4200, icono: '💊' },
   { id: 'ME002', categoria: 'Antibióticos', nombre: 'Enrox 50mg', principioActivo: 'Enrofloxacino', presentacion: 'Blíster 10 comp.', especie: 'Perro / Gato', stock: 30, precio: 6800, icono: '💊' },
-  { id: 'ME004', categoria: 'Antiparasitarios', nombre: 'Nexgard', principioActivo: 'Afoxolaner', presentacion: 'Masticable 1 unid.', especie: 'Perro', stock: 60, precio: 9500, icono: '🐛' },
-  { id: 'ME005', categoria: 'Antiparasitarios', nombre: 'Bravecto', principioActivo: 'Fluralaner', presentacion: 'Masticable 1 unid.', especie: 'Perro', stock: 40, precio: 18900, icono: '🐛' },
+  { id: 'ME004', categoria: 'Antiparasitarios', nombre: 'Nexgard', principioActivo: 'Afoxolaner', presentacion: 'Masticable 1 unid.', especie: 'Perro', stock: 60, precio: 9500, precioOferta: 8500, icono: '🐛' },
+  { id: 'ME005', categoria: 'Antiparasitarios', nombre: 'Bravecto', principioActivo: 'Fluralaner', presentacion: 'Masticable 1 unid.', especie: 'Perro', stock: 40, precio: 18900, precioOferta: 16900, icono: '🐛' },
   { id: 'ME006', categoria: 'Antiparasitarios', nombre: 'Revolution Plus', principioActivo: 'Selamectina + Sarolaner', presentacion: 'Pipeta 1 unid.', especie: 'Gato', stock: 35, precio: 14500, icono: '🐛' },
   { id: 'ME009', categoria: 'Antiinflamatorios', nombre: 'Meloxicam 1mg', principioActivo: 'Meloxicam', presentacion: 'Blíster 10 comp.', especie: 'Perro / Gato', stock: 55, precio: 4500, icono: '🩹' },
   { id: 'ME011', categoria: 'Dermatología', nombre: 'Clorhexidina shampoo', principioActivo: 'Clorhexidina 2%', presentacion: 'Frasco 250ml', especie: 'Perro / Gato', stock: 25, precio: 8900, icono: '🧴' },
   { id: 'ME013', categoria: 'Dermatología', nombre: 'Apoquel 16mg', principioActivo: 'Oclacitinib', presentacion: 'Blíster 10 comp.', especie: 'Perro', stock: 18, precio: 22000, icono: '🧴' },
   { id: 'ME014', categoria: 'Digestivo', nombre: 'Probifor', principioActivo: 'Bacillus clausii', presentacion: 'Sobre 5ml x10', especie: 'Perro / Gato', stock: 40, precio: 5600, icono: '🍽️' },
   { id: 'ME016', categoria: 'Cardíaco', nombre: 'Vetmedin 2.5mg', principioActivo: 'Pimobendan', presentacion: 'Blíster 10 comp.', especie: 'Perro', stock: 15, precio: 28000, icono: '❤️' },
-  { id: 'ME018', categoria: 'Vacunas', nombre: 'Nobivac DHPPi', principioActivo: 'Vacuna polivalente', presentacion: 'Vial 1 dosis', especie: 'Perro', stock: 48, precio: 8500, icono: '💉' },
+  { id: 'ME018', categoria: 'Vacunas', nombre: 'Nobivac DHPPi', principioActivo: 'Vacuna polivalente', presentacion: 'Vial 1 dosis', especie: 'Perro', stock: 48, precio: 8500, precioOferta: 7900, icono: '💉' },
   { id: 'ME021', categoria: 'Suplementos', nombre: 'Omega vet 3-6-9', principioActivo: 'Ácidos grasos omega', presentacion: 'Frasco 100ml', especie: 'Perro / Gato', stock: 30, precio: 9900, icono: '🌿' },
 ];
 
@@ -46,6 +48,7 @@ export function createId(prefix: string): string {
 }
 
 export function getUsers(): User[] {
+  const raw = localStorage.getItem(keys.users);
   const stored = read<Partial<User>[]>(keys.users, []);
   const users = stored.map((user) => ({
     ...user,
@@ -60,20 +63,93 @@ export function getUsers(): User[] {
     { id: 'demo-vendedor', nombre: 'Vendedor', apellido: 'San Marcos', correo: 'vendedor@duoc.cl', password: 'Vendedor123', role: 'vendedor', fechaNacimiento: '', direccion: '', region: '', genero: '', compras: [], intentosFallidos: 0, bloqueado: false },
   ];
   for (const demo of demos) if (!users.some((user) => user.correo.toLowerCase() === demo.correo)) users.push(demo);
-  write(keys.users, users);
+  if (raw === null || JSON.stringify(users) !== raw) write(keys.users, users);
   return users;
 }
 
 export function saveUsers(users: User[]): void { write(keys.users, users); }
-export function getProducts(): Product[] { return read(keys.products, initialProducts); }
+export function getProducts(): Product[] {
+  const products = read<Product[] | null>(keys.products, null);
+  if (!products) {
+    write(keys.products, initialProducts);
+    localStorage.setItem(keys.offerMigration, '1');
+    return initialProducts;
+  }
+  if (localStorage.getItem(keys.offerMigration) !== '1') {
+    const migrated = products.map((product) => {
+      const seedOffer = initialProducts.find((item) => item.id === product.id)?.precioOferta;
+      return product.precioOferta === undefined && seedOffer ? { ...product, precioOferta: seedOffer } : product;
+    });
+    write(keys.products, migrated);
+    localStorage.setItem(keys.offerMigration, '1');
+    return migrated;
+  }
+  return products;
+}
 export function saveProducts(products: Product[]): void { write(keys.products, products); }
-export function getCategories(): string[] { return read(keys.categories, defaultCategories); }
+export function createProduct(products: Product[], product: Product): Product[] {
+  const created = { ...product, id: product.id || createId('prod') };
+  const next = [...products, created];
+  saveProducts(next);
+  return next;
+}
+export function updateProduct(products: Product[], product: Product): Product[] {
+  const next = products.map((item) => item.id === product.id ? product : item);
+  saveProducts(next);
+  return next;
+}
+export function deleteProduct(products: Product[], id: string): Product[] {
+  const next = products.filter((item) => item.id !== id);
+  saveProducts(next);
+  return next;
+}
+export function getCategories(): string[] {
+  const categories = read<string[] | null>(keys.categories, null);
+  if (categories) return categories;
+  write(keys.categories, defaultCategories);
+  return defaultCategories;
+}
 export function saveCategories(categories: string[]): void { write(keys.categories, categories); }
+export function createCategory(categories: string[], category: string): string[] {
+  const next = [...categories, category];
+  saveCategories(next);
+  return next;
+}
+export function updateCategory(categories: string[], previous: string, category: string): string[] {
+  const next = categories.map((item) => item === previous ? category : item);
+  saveCategories(next);
+  return next;
+}
+export function deleteCategory(categories: string[], category: string): string[] {
+  const next = categories.filter((item) => item !== category);
+  saveCategories(next);
+  return next;
+}
+export function createUser(users: User[], user: User): User[] {
+  const next = [...users, { ...user, id: user.id || createId('usr') }];
+  saveUsers(next);
+  return next;
+}
+export function updateUser(users: User[], user: User): User[] {
+  const next = users.map((item) => item.id === user.id ? user : item);
+  saveUsers(next);
+  return next;
+}
+export function deleteUser(users: User[], id: string): User[] {
+  const next = users.filter((item) => item.id !== id);
+  saveUsers(next);
+  return next;
+}
 export function getCart(): CartItem[] { return read(keys.cart, []); }
 export function saveCart(cart: CartItem[]): void { write(keys.cart, cart); }
+export function getCheckoutResult(): CheckoutResult | null { return read(keys.checkoutResult, null); }
+export function saveCheckoutResult(result: CheckoutResult): void { write(keys.checkoutResult, result); }
 export function getSession(): User | null {
   const session = read<Pick<User, 'id' | 'correo'> | null>(keys.session, null);
-  return session ? getUsers().find((user) => user.id === session.id || user.correo === session.correo) ?? null : null;
+  if (!session) return null;
+  const user = getUsers().find((account) => account.id === session.id || account.correo === session.correo);
+  if (!user) localStorage.removeItem(keys.session);
+  return user ?? null;
 }
 export function saveSession(user: User | null): void {
   if (user) write(keys.session, { id: user.id, correo: user.correo });

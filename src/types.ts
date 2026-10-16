@@ -1,7 +1,5 @@
 export type Role = 'administrador' | 'vendedor' | 'cliente';
 
-export type ProfileDetails = Pick<User, 'nombre' | 'apellido' | 'fechaNacimiento' | 'correo' | 'direccion' | 'region' | 'genero'>;
-
 export interface User {
   id: string;
   nombre: string;
@@ -27,6 +25,7 @@ export interface Product {
   especie: string;
   stock: number;
   precio: number;
+  precioOferta?: number;
   icono: string;
 }
 
@@ -38,8 +37,28 @@ export interface CartItem {
 export interface Order {
   idOrden: string;
   fecha: string;
+  direccionEntrega: string;
+  regionEntrega: string;
+  tipoEntrega: 'despacho' | 'retiro';
+  metodoPago: 'tarjeta' | 'transferencia';
+  estado: 'confirmado';
   items: { id: string; nombre: string; cantidad: number; precioUnitario: number; subtotal: number }[];
   total: number;
+}
+
+export interface CheckoutDetails {
+  direccionEntrega: string;
+  regionEntrega: string;
+  tipoEntrega: 'despacho' | 'retiro';
+  metodoPago: 'tarjeta' | 'transferencia';
+  numeroTarjeta: string;
+}
+
+export interface CheckoutResult {
+  estado: 'exitoso' | 'fallido';
+  mensaje: string;
+  order: Order | null;
+  fecha: string;
 }
 
 export interface Notice {

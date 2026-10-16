@@ -1,0 +1,22 @@
+.featured-grid,
+.specialists-grid,
+.products-grid,
+.contact-layout {
+  display: flex;
+}
+
+.featured-grid > *,
+.specialists-grid > *,
+.products-grid > * {
+  min-width: 0;
+}
+
+.product-card {
+  height: 100%;
+}
+
+.profile-fields .form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+}
