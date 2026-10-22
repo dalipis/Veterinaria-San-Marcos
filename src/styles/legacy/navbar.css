@@ -181,6 +181,10 @@
     padding: 8px 12px;
 }
 
+.mobile-cart-toggle {
+    display: none;
+}
+
 .cart-count {
     background: var(--color-coral);
     border-radius: 999px;
