@@ -1,17 +1,11 @@
 import { useState, type FormEvent } from 'react';
+import { regions } from '../constants/regions';
 import type { User } from '../types';
 
 interface ProfilePageProps {
   user: User;
   onSave: (user: User) => string | null;
 }
-
-const regions = [
-  'Arica y Parinacota', 'Tarapacá', 'Antofagasta', 'Atacama', 'Coquimbo', 'Valparaíso',
-  'Metropolitana de Santiago', "Libertador General Bernardo O'Higgins", 'Maule', 'Ñuble',
-  'Biobío', 'La Araucanía', 'Los Ríos', 'Los Lagos',
-  'Aysén del General Carlos Ibáñez del Campo', 'Magallanes y de la Antártica Chilena',
-];
 
 function calculateAge(date: string): number | null {
   if (!date) return null;
@@ -23,7 +17,7 @@ function calculateAge(date: string): number | null {
   return age;
 }
 
-export function ProfilePage({ user, onSave }: ProfilePageProps) {
+export default function ProfilePage({ user, onSave }: ProfilePageProps) {
   const [profile, setProfile] = useState({
     nombre: user.nombre,
     apellido: user.apellido,

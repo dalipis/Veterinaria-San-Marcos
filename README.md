@@ -1,6 +1,6 @@
 # Veterinaria San Marcos
 
-Tienda académica migrada a React, TypeScript y Vite. Las páginas públicas y el panel comparten componentes y una fuente de datos persistida en `localStorage`.
+Tienda académica construida con React 19, TypeScript, Vite y React Router. Las páginas y el panel comparten estado y datos persistidos en `localStorage`.
 
 ## Desarrollo
 
@@ -15,17 +15,25 @@ npm run build
 
 ## Estructura
 
-- `pages/`: entradas HTML multipágina; Vite la usa como raíz web para conservar las rutas actuales.
+- `index.html`: única entrada HTML de la aplicación React.
+- `src/App.tsx`: proveedores globales y árbol de rutas.
+- `src/pages/`: una página por archivo, incluyendo catálogo, login, perfil y panel.
+- `src/components/`: guards para rutas con sesión y permisos de personal.
+- `src/layout/`: navbar, layout de página, footer, carrito, historial y scroll.
+- `src/contexts/`: estado compartido de productos, sesión, carrito y notificaciones.
+- `src/ui/`: piezas visuales reutilizables, como las tarjetas y el detalle del producto.
+- `src/services/`: lectura y escritura centralizadas en `localStorage`.
+- `src/constants/`, `src/data/`, `src/utils/` y `src/types/`: opciones, catálogo inicial, formato y tipos de dominio.
+- `src/styles/`: estilos activos de la interfaz, incluidos los estilos heredados que se mantienen en uso.
+- `legacy/`: páginas HTML y scripts de la implementación anterior, archivados y fuera de la compilación.
 - `config/`: configuraciones de Vite y TypeScript.
-- `src/`: aplicación React, componentes, páginas, tipos, datos y estilos activos.
-- `src/styles/legacy/`: hojas CSS del diseño original, importadas por la aplicación mientras se conserva ese estilo.
 - `public/images/`: imágenes estáticas servidas directamente por Vite.
 - `docs/requisitos/`: pauta, anexo, instrumento y planilla entregados para el proyecto.
 - `package.json` y `package-lock.json` permanecen en la raíz como archivos de gestión del proyecto.
 
 ## Rutas
 
-- `index.html`: inicio, presentación de la clínica y contacto.
+- `/` e `/index.html`: inicio, presentación de la clínica y contacto.
 - `catalogo.html`: catálogo con búsqueda, filtros por categoría, detalle y carrito.
 - `categorias.html`: navegación del catálogo agrupada por categoría.
 - `ofertas.html`: productos con precio promocional.
@@ -35,6 +43,8 @@ npm run build
 - `admin.html`: gestión según el rol activo.
 
 En el checkout, el pago es una simulación local: una tarjeta de prueba que termina en `0002` se rechaza; otras tarjetas válidas y la transferencia simulada se aprueban. No se envían ni almacenan datos de tarjetas y no se procesan pagos reales.
+
+Las rutas antiguas con extensión `.html` se conservan dentro de React Router para no romper enlaces, accesos guardados ni el flujo de checkout.
 
 ## Permisos
 

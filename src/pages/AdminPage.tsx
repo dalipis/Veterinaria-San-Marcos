@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import type { Product, Role, User } from '../types';
 
 interface AdminPageProps {
@@ -17,7 +18,7 @@ interface AdminPageProps {
 
 const emptyProduct = (category: string): Product => ({ id: '', categoria: category, nombre: '', principioActivo: '', presentacion: '', especie: 'Perro / Gato', stock: 0, precio: 0, icono: '🐾' });
 
-export function AdminPage({ user, users, products, categories, onSaveProduct, onSaveProducts, onDeleteProduct, onSaveUser, onDeleteUser, onSaveCategories, notify }: AdminPageProps) {
+export default function AdminPage({ user, users, products, categories, onSaveProduct, onSaveProducts, onDeleteProduct, onSaveUser, onDeleteUser, onSaveCategories, notify }: AdminPageProps) {
   const isAdmin = user.role === 'administrador';
   const [tab, setTab] = useState<'products' | 'users' | 'categories'>('products');
   const [editing, setEditing] = useState<Product | null>(null);
@@ -90,7 +91,7 @@ export function AdminPage({ user, users, products, categories, onSaveProduct, on
       <div className="container">
         <div className="admin-heading">
           <div><p className="eyebrow">Gestión interna</p><h1>Panel de {isAdmin ? 'administración' : 'ventas'}</h1><p>Sesión: {user.nombre} {user.apellido} · {user.role}</p></div>
-          <a className="button button--outline" href="catalogo.html">Ver tienda</a>
+          <Link className="button button--outline" to="/catalogo.html">Ver tienda</Link>
         </div>
         <div className="admin-summary">
           <div><span>Productos activos</span><strong>{products.length}</strong></div>
