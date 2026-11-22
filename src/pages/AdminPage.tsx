@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import type { Product, Role, User } from '../types';
+import type { AdminReport, Order, Product, Role, User } from '../types';
 
 interface AdminPageProps {
   user: User;
@@ -14,17 +14,23 @@ interface AdminPageProps {
   onDeleteUser: (id: string) => void;
   onSaveCategories: (categories: string[]) => void;
   notify: (text: string, kind?: 'success' | 'error' | 'info') => void;
+  orders: Order[];
+  report: AdminReport | null;
+  onUpdateOrderStatus: (id: string, estado: Order['estado']) => Promise<void>;
+  onLoadReport: (period?: 'week' | 'month' | 'year') => Promise<void>;
 }
 
 const emptyProduct = (category: string): Product => ({ id: '', categoria: category, nombre: '', principioActivo: '', presentacion: '', especie: 'Perro / Gato', stock: 0, precio: 0, icono: '🐾' });
 
-export default function AdminPage({ user, users, products, categories, onSaveProduct, onSaveProducts, onDeleteProduct, onSaveUser, onDeleteUser, onSaveCategories, notify }: AdminPageProps) {
+export default function AdminPage({ user, users, products, categories, onSaveProduct, onSaveProducts, onDeleteProduct, onSaveUser, onDeleteUser, onSaveCategories, orders, report, onUpdateOrderStatus, onLoadReport, notify }: AdminPageProps) {
   const isAdmin = user.role === 'administrador';
-  const [tab, setTab] = useState<'products' | 'users' | 'categories'>('products');
+  const [tab, setTab] = useState<'products' | 'users' | 'categories' | 'orders' | 'report'>('products');
+  const [period, setPeriod] = useState<'week' | 'month' | 'year'>('month');
   const [editing, setEditing] = useState<Product | null>(null);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [categoryInput, setCategoryInput] = useState('');
   const [userMessage, setUserMessage] = useState('');
+
 
   function saveProduct(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -103,6 +109,8 @@ export default function AdminPage({ user, users, products, categories, onSavePro
             <button className={tab === 'products' ? 'active' : ''} type="button" role="tab" aria-selected={tab === 'products'} onClick={() => setTab('products')}>Productos y stock</button>
             {isAdmin && <button className={tab === 'users' ? 'active' : ''} type="button" role="tab" aria-selected={tab === 'users'} onClick={() => setTab('users')}>Usuarios</button>}
             {isAdmin && <button className={tab === 'categories' ? 'active' : ''} type="button" role="tab" aria-selected={tab === 'categories'} onClick={() => setTab('categories')}>Categorías</button>}
+            {isAdmin && <button className={tab === 'orders' ? 'active' : ''} type="button" role="tab" aria-selected={tab === 'orders'} onClick={() => setTab('orders')}>Pedidos</button>}
+            {isAdmin && <button className={tab === 'report' ? 'active' : ''} type="button" role="tab" aria-selected={tab === 'report'} onClick={() => { setTab('report'); void onLoadReport(period); }}>Reportes</button>}
           </div>
 
           {tab === 'products' && <section className="admin-section">
@@ -196,6 +204,34 @@ export default function AdminPage({ user, users, products, categories, onSavePro
               if (products.some((product) => product.categoria === category)) { notify('Primero cambia de categoría los productos asociados.', 'error'); return; }
               onSaveCategories(categories.filter((item) => item !== category));
             }}>Eliminar</button></div></li>)}</ul>
+          </section>}
+
+          {tab === 'orders' && isAdmin && <section className="admin-section">
+            <div className="admin-section-title"><div><h2>Pedidos y operaciones</h2><p>Consulta y actualiza el estado de las compras autorizadas.</p></div></div>
+            {orders.length === 0 ? <p className="empty-state">Aún no existen pedidos registrados.</p> : <div className="table-scroll table-responsive"><table className="admin-table table table-hover align-middle">
+              <thead><tr><th>Identificador</th><th>Fecha</th><th>Cliente</th><th>Total</th><th>Estado</th></tr></thead>
+              <tbody>{orders.map((order) => <tr key={order.idOrden}>
+                <td><strong>{order.idOrden}</strong></td><td>{order.fecha}</td><td>{order.direccionEntrega}</td><td>${order.total.toLocaleString('es-CL')}</td>
+                <td><select className="form-select" value={order.estado} onChange={(event) => void onUpdateOrderStatus(order.idOrden, event.target.value as Order['estado'])}>
+                  <option value="confirmado">Confirmado</option><option value="procesando">Procesando</option><option value="entregado">Entregado</option><option value="cancelado">Cancelado</option>
+                </select></td>
+              </tr>)}</tbody>
+            </table></div>}
+          </section>}
+
+          {tab === 'report' && isAdmin && <section className="admin-section">
+            <div className="admin-section-title"><div><h2>Resumen administrativo</h2><p>Indicadores calculados por el backend al estar integrado.</p></div>
+              <select className="form-select" aria-label="Periodo del reporte" value={period} onChange={(event) => {
+                const nextPeriod = event.target.value as 'week' | 'month' | 'year';
+                setPeriod(nextPeriod);
+                void onLoadReport(nextPeriod);
+              }}><option value="week">Semana</option><option value="month">Mes</option><option value="year">Año</option></select>
+            </div>
+            {report ? <>
+              <div className="admin-summary"><div><span>Operaciones</span><strong>{report.totalOperaciones}</strong></div><div><span>Monto vendido</span><strong>${report.montoTotal.toLocaleString('es-CL')}</strong></div><div><span>Productos vendidos</span><strong>{report.productosVendidos}</strong></div></div>
+              <h3>Productos más solicitados</h3>
+              <div className="table-scroll table-responsive"><table className="admin-table table"><thead><tr><th>Producto</th><th>Cantidad</th></tr></thead><tbody>{report.masSolicitados.map((item) => <tr key={item.nombre}><td>{item.nombre}</td><td>{item.cantidad}</td></tr>)}</tbody></table></div>
+            </> : <p>Cargando indicadores...</p>}
           </section>}
         </div>
       </div>

@@ -41,9 +41,24 @@ export interface Order {
   regionEntrega: string;
   tipoEntrega: 'despacho' | 'retiro';
   metodoPago: 'tarjeta' | 'transferencia';
-  estado: 'confirmado';
+  estado: 'confirmado' | 'procesando' | 'entregado' | 'cancelado';
   items: { id: string; nombre: string; cantidad: number; precioUnitario: number; subtotal: number }[];
   total: number;
+}
+
+export interface AuthSession {
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: number;
+  user: User;
+}
+
+export interface AdminReport {
+  totalOperaciones: number;
+  montoTotal: number;
+  productosVendidos: number;
+  masSolicitados: { nombre: string; cantidad: number }[];
+  porPeriodo: { periodo: string; operaciones: number; monto: number }[];
 }
 
 export interface CheckoutDetails {

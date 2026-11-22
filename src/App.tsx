@@ -69,6 +69,10 @@ function AppRoutes() {
           onSaveUser={store.saveManagedUser}
           onDeleteUser={store.deleteManagedUser}
           onSaveCategories={store.saveManagedCategories}
+          orders={store.orders}
+          report={store.report}
+          onUpdateOrderStatus={store.updateOrderStatus}
+          onLoadReport={store.loadReport}
           notify={store.notify}
         /></StaffRoute>} />
         <Route path="/acceso-denegado" element={<AccessDeniedPage />} />

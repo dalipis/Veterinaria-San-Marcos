@@ -18,7 +18,7 @@ export default function PageLayout() {
       cartCount={store.cartCount}
       onCartOpen={() => setCartOpen(true)}
       onOrdersOpen={() => setOrdersOpen(true)}
-      onLogout={() => { store.setUser(null); navigate('/index.html'); }}
+      onLogout={() => { void store.setUser(null).then(() => navigate('/index.html')); }}
     />
     <div className="page-content"><Outlet /></div>
     <Footer />
@@ -31,7 +31,7 @@ export default function PageLayout() {
       onRemove={(id) => store.setCart(store.cart.filter((item) => item.id !== id))}
       onCheckout={() => navigate(store.user ? '/checkout.html' : '/login.html?next=checkout.html')}
     />
-    {ordersOpen && store.user && <OrdersModal user={store.user} onClose={() => setOrdersOpen(false)} />}
+    {ordersOpen && store.user && <OrdersModal orders={store.orders} onClose={() => setOrdersOpen(false)} />}
     {store.notice && <div className={`toast toast--${store.notice.kind}`} role="status">{store.notice.text}</div>}
   </div>;
 }

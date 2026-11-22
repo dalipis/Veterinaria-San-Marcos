@@ -4,7 +4,7 @@ import type { User } from '../types';
 
 interface ProfilePageProps {
   user: User;
-  onSave: (user: User) => string | null;
+  onSave: (user: User) => Promise<string | null>;
 }
 
 function calculateAge(date: string): number | null {
@@ -36,13 +36,13 @@ export default function ProfilePage({ user, onSave }: ProfilePageProps) {
     setSaved(false);
   }
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const fullNameIsValid = profile.nombre.trim().length > 0 && profile.apellido.trim().length > 0;
     if (!fullNameIsValid) return setMessage('Ingresa tu nombre y apellido.');
     if (age === null || age < 0) return setMessage('Ingresa una fecha de nacimiento válida.');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.correo.trim())) return setMessage('Ingresa un correo electrónico válido.');
-    const error = onSave({
+    const error = await onSave({
       ...user,
       nombre: profile.nombre.trim(),
       apellido: profile.apellido.trim(),

@@ -2,15 +2,15 @@ import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import type { User } from '../types';
 
-interface LoginPageProps { onLogin: (email: string, password: string) => { user?: User; message: string } }
+interface LoginPageProps { onLogin: (email: string, password: string) => Promise<{ user?: User; message: string }> }
 
 export default function LoginPage({ onLogin }: LoginPageProps) {
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
-  function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const result = onLogin(String(data.get('correo')).trim().toLowerCase(), String(data.get('password')));
+    const result = await onLogin(String(data.get('correo')).trim().toLowerCase(), String(data.get('password')));
     if (result.user) {
       const nextPage = new URLSearchParams(window.location.search).get('next');
       navigate(nextPage === 'checkout.html' ? '/checkout.html' : result.user.role === 'cliente' ? '/index.html' : '/admin.html');

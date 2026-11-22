@@ -54,3 +54,14 @@ Las rutas antiguas con extensión `.html` se conservan dentro de React Router pa
 - Cualquier usuario registrado en el flujo público recibe el rol cliente.
 
 Para probar el panel localmente: `admin@duoc.cl` / `Admin123` o `vendedor@duoc.cl` / `Vendedor123`. Las cuentas se crean automáticamente si no existen. Los datos de prueba y credenciales se guardan solo en el navegador; este prototipo no implementa seguridad de producción.
+
+## Integración con backend
+
+El frontend está preparado para consumir una API REST mediante `src/services/api.ts`.
+
+1. Copia `.env.example` como `.env`.
+2. Configura `VITE_API_URL` con la URL pública o local del backend Spring Boot.
+3. Reinicia Vite después de cambiar la variable.
+4. Implementa los endpoints usados por `api.ts`: autenticación, usuarios, productos, categorías, pedidos, reportes y renovación de sesión.
+
+Sin `VITE_API_URL`, la aplicación usa temporalmente datos simulados en memoria. Esta simulación no persiste productos, usuarios ni compras al recargar y no reemplaza un backend seguro.

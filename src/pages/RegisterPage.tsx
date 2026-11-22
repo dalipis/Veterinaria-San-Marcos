@@ -2,12 +2,12 @@ import { useState, type FormEvent } from 'react';
 import { regions } from '../constants/regions';
 import type { User } from '../types';
 
-interface RegisterPageProps { onRegister: (details: Omit<User, 'id' | 'role' | 'compras' | 'intentosFallidos' | 'bloqueado'>) => string | null }
+interface RegisterPageProps { onRegister: (details: Omit<User, 'id' | 'role' | 'compras' | 'intentosFallidos' | 'bloqueado'>) => Promise<string | null> }
 
 export default function RegisterPage({ onRegister }: RegisterPageProps) {
   const [message, setMessage] = useState('');
   const [success, setSuccess] = useState(false);
-  function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
@@ -23,7 +23,7 @@ export default function RegisterPage({ onRegister }: RegisterPageProps) {
     if (age < 14) return setMessage('Debes tener al menos 14 años para registrarte.');
     if (!/^(?=.*[A-Z])(?=.*\d).{8,}$/.test(password)) return setMessage('La contraseña debe tener 8 caracteres, una mayúscula y un número.');
     if (password !== confirm) return setMessage('Las contraseñas no coinciden.');
-    const error = onRegister({ nombre: String(data.get('nombre')).trim(), apellido: String(data.get('apellido')).trim(), fechaNacimiento: birth, correo: email, password, direccion: String(data.get('direccion')).trim(), region: String(data.get('region')), genero: String(data.get('genero')) });
+    const error = await onRegister({ nombre: String(data.get('nombre')).trim(), apellido: String(data.get('apellido')).trim(), fechaNacimiento: birth, correo: email, password, direccion: String(data.get('direccion')).trim(), region: String(data.get('region')), genero: String(data.get('genero')) });
     if (error) return setMessage(error);
     setSuccess(true);
     setMessage('Cuenta de cliente creada. Ya puedes iniciar sesión.');
