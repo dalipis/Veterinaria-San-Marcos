@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StoreContext } from './store-context';
-import { api, getStoredSession, saveSession } from '../services/api';
-import { initialProducts } from '../data/products';
-import { defaultCategories } from '../constants';
+import { api, setSessionExpiredHandler } from '../services/api';
 import type { AdminReport, CartItem, CheckoutDetails, CheckoutResult, Notice, Order, Product, User } from '../types';
 
 function reconcileCart(items: CartItem[], products: Product[]): CartItem[] {
@@ -14,11 +12,11 @@ function reconcileCart(items: CartItem[], products: Product[]): CartItem[] {
 }
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const [products, setProductsState] = useState<Product[]>(initialProducts);
+  const [products, setProductsState] = useState<Product[]>([]);
   const [users, setUsersState] = useState<User[]>([]);
-  const [categories, setCategoriesState] = useState<string[]>(defaultCategories);
+  const [categories, setCategoriesState] = useState<string[]>([]);
   const [cart, setCartState] = useState<CartItem[]>([]);
-  const [user, setUserState] = useState<User | null>(getStoredSession()?.user ?? null);
+  const [user, setUserState] = useState<User | null>(null);
   const [checkoutResult, setCheckoutResult] = useState<CheckoutResult | null>(null);
   const [orders, setOrdersState] = useState<Order[]>([]);
   const [report, setReport] = useState<AdminReport | null>(null);
@@ -26,6 +24,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const noticeTimeout = useRef<number | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setSessionExpiredHandler(() => {
+      setUserState(null);
+      setUsersState([]);
+      setOrdersState([]);
+    });
+  }, []);
 
   useEffect(() => {
     void (async () => {
@@ -37,13 +43,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         if (session) setUserState(session.user);
         if (session?.user) {
           const [savedUsers, savedOrders] = await Promise.all([
-            api.getUsers().catch(() => []),
-            session.user.role === 'cliente' ? api.getOrders(session.user) : api.getAllOrders(),
+            session.user.role === 'administrador' ? api.getUsers() : Promise.resolve([]),
+            session.user.role === 'cliente'
+              ? api.getOrders()
+              : session.user.role === 'administrador' ? api.getAllOrders() : Promise.resolve([]),
           ]);
           setUsersState(savedUsers);
           setOrdersState(savedOrders);
         }
       } catch (error) {
+        setUserState(null);
         notify(error instanceof Error ? error.message : 'No fue posible cargar los datos.', 'error');
       } finally {
         setLoading(false);
@@ -71,8 +80,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }
 
   async function setUser(next: User | null) {
-    if (next) saveSession({ ...(getStoredSession() ?? { accessToken: '', refreshToken: '', expiresAt: Date.now() + 30 * 60 * 1000 }), user: next });
-    else await api.logout();
+    if (!next) {
+      try {
+        await api.logout();
+      } catch {
+        notify('La sesión se cerró en este navegador, pero no se pudo revocar en el servidor.', 'error');
+      } finally {
+        setUserState(null);
+      }
+      return;
+    }
     setUserState(next);
   }
 
@@ -107,14 +124,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       return;
     }
     try {
-      const result = await api.checkout(user, cart, details);
+      const result = await api.checkout(cart, details);
       setCheckoutResult(result);
       if (result.estado === 'exitoso') {
         const initial = await api.bootstrap();
         setProductsState(initial.products);
         setCategoriesState(initial.categories);
         setCart([]);
-        setOrdersState(await api.getOrders(user));
+        setOrdersState(await api.getOrders());
       }
       navigate('/compra-resultado.html');
     } catch (error) {
@@ -133,8 +150,20 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     try {
       const session = await api.login(email.trim().toLowerCase(), password);
       setUserState(session.user);
-      setUsersState(await api.getUsers().catch(() => []));
-      setOrdersState(session.user.role === 'cliente' ? await api.getOrders(session.user).catch(() => []) : await api.getAllOrders().catch(() => []));
+      try {
+        const [savedUsers, savedOrders] = await Promise.all([
+          session.user.role === 'administrador' ? api.getUsers() : Promise.resolve([]),
+          session.user.role === 'cliente'
+            ? api.getOrders()
+            : session.user.role === 'administrador' ? api.getAllOrders() : Promise.resolve([]),
+        ]);
+        setUsersState(savedUsers);
+        setOrdersState(savedOrders);
+      } catch (error) {
+        setUsersState([]);
+        setOrdersState([]);
+        notify(error instanceof Error ? error.message : 'No fue posible cargar los datos de la cuenta.', 'error');
+      }
       return { user: session.user, message: 'Sesión iniciada.' };
     } catch (error) {
       return { message: error instanceof Error ? error.message : 'No fue posible iniciar sesión.' };
@@ -152,7 +181,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   async function saveManagedUser(account: User) {
     try {
-      setUsersState(await api.saveUser(account));
+      setUsersState(await api.saveUser(account, user?.role ?? 'cliente'));
       notify('Usuario guardado correctamente.', 'success');
     } catch (error) {
       notify(error instanceof Error ? error.message : 'No fue posible guardar el usuario.', 'error');
@@ -162,9 +191,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   async function deleteManagedUser(id: string) {
     try {
       setUsersState(await api.deleteUser(id));
-      notify('Usuario eliminado.', 'success');
+      notify('Usuario desactivado.', 'success');
     } catch (error) {
-      notify(error instanceof Error ? error.message : 'No fue posible eliminar el usuario.', 'error');
+      notify(error instanceof Error ? error.message : 'No fue posible desactivar el usuario.', 'error');
+    }
+  }
+
+  async function activateManagedUser(id: string) {
+    try {
+      setUsersState(await api.activateUser(id));
+      notify('Usuario reactivado.', 'success');
+    } catch (error) {
+      notify(error instanceof Error ? error.message : 'No fue posible reactivar el usuario.', 'error');
     }
   }
 
@@ -181,7 +219,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   async function saveManagedProduct(product: Product) {
     try {
-      setProductsState(await api.saveProduct(product));
+      setProductsState(await api.saveProduct(product, user?.role ?? 'cliente'));
       notify('Producto guardado correctamente.', 'success');
     } catch (error) {
       notify(error instanceof Error ? error.message : 'No fue posible guardar el producto.', 'error');
@@ -228,14 +266,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   return <StoreContext.Provider value={{
     products, users, categories, cart, user, checkoutResult, notice, orders, report, loading,
-    cartCount, available, setProducts: (next) => { void saveManagedProducts(next); }, setUsers: (next) => setUsersState(next),
-    setCategories: setCategoriesState, setCart, setUser, notify, addToCart, changeQuantity, completeCheckout,
-    login, register, saveManagedUser, deleteManagedUser, saveProfile, saveManagedProduct,
+    cartCount, available, setCategories: setCategoriesState, setCart, setUser, notify, addToCart, changeQuantity, completeCheckout,
+    login, register, saveManagedUser, deleteManagedUser, activateManagedUser, saveProfile, saveManagedProduct,
     deleteManagedProduct, saveManagedCategories, updateOrderStatus, loadReport,
   }}>{children}</StoreContext.Provider>;
-
-  async function saveManagedProducts(next: Product[]) {
-    for (const product of next) await api.saveProduct(product);
-    setProductsState(await api.bootstrap().then((initial) => initial.products));
-  }
 }

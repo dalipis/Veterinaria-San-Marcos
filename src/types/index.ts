@@ -14,6 +14,7 @@ export interface User {
   compras: Order[];
   intentosFallidos: number;
   bloqueado: boolean;
+  activo?: boolean;
 }
 
 export interface Product {
@@ -47,9 +48,6 @@ export interface Order {
 }
 
 export interface AuthSession {
-  accessToken: string;
-  refreshToken: string;
-  expiresAt: number;
   user: User;
 }
 

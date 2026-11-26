@@ -14,8 +14,6 @@ export interface StoreContextValue {
   loading: boolean;
   cartCount: number;
   available: (id: string) => number;
-  setProducts: (products: Product[]) => void;
-  setUsers: (users: User[]) => void;
   setCategories: (categories: string[]) => void;
   setCart: (cart: CartItem[]) => void;
   setUser: (user: User | null) => Promise<void>;
@@ -27,6 +25,7 @@ export interface StoreContextValue {
   register: (details: Omit<User, 'id' | 'role' | 'compras' | 'intentosFallidos' | 'bloqueado'>) => Promise<string | null>;
   saveManagedUser: (account: User) => Promise<void>;
   deleteManagedUser: (id: string) => Promise<void>;
+  activateManagedUser: (id: string) => Promise<void>;
   saveProfile: (account: User) => Promise<string | null>;
   saveManagedProduct: (product: Product) => Promise<void>;
   deleteManagedProduct: (id: string) => Promise<void>;

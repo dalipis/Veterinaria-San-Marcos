@@ -32,6 +32,6 @@ export default function PageLayout() {
       onCheckout={() => navigate(store.user ? '/checkout.html' : '/login.html?next=checkout.html')}
     />
     {ordersOpen && store.user && <OrdersModal orders={store.orders} onClose={() => setOrdersOpen(false)} />}
-    {store.notice && <div className={`toast toast--${store.notice.kind}`} role="status">{store.notice.text}</div>}
+    {store.notice && <div className={`app-notice app-notice--${store.notice.kind}`} role="status" aria-live="polite">{store.notice.text}</div>}
   </div>;
 }

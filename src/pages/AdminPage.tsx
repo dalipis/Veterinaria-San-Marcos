@@ -8,10 +8,10 @@ interface AdminPageProps {
   products: Product[];
   categories: string[];
   onSaveProduct: (product: Product) => void;
-  onSaveProducts: (products: Product[]) => void;
   onDeleteProduct: (id: string) => void;
   onSaveUser: (user: User) => void;
   onDeleteUser: (id: string) => void;
+  onActivateUser: (id: string) => void;
   onSaveCategories: (categories: string[]) => void;
   notify: (text: string, kind?: 'success' | 'error' | 'info') => void;
   orders: Order[];
@@ -22,7 +22,7 @@ interface AdminPageProps {
 
 const emptyProduct = (category: string): Product => ({ id: '', categoria: category, nombre: '', principioActivo: '', presentacion: '', especie: 'Perro / Gato', stock: 0, precio: 0, icono: '🐾' });
 
-export default function AdminPage({ user, users, products, categories, onSaveProduct, onSaveProducts, onDeleteProduct, onSaveUser, onDeleteUser, onSaveCategories, orders, report, onUpdateOrderStatus, onLoadReport, notify }: AdminPageProps) {
+export default function AdminPage({ user, users, products, categories, onSaveProduct, onDeleteProduct, onSaveUser, onDeleteUser, onActivateUser, onSaveCategories, orders, report, onUpdateOrderStatus, onLoadReport, notify }: AdminPageProps) {
   const isAdmin = user.role === 'administrador';
   const [tab, setTab] = useState<'products' | 'users' | 'categories' | 'orders' | 'report'>('products');
   const [period, setPeriod] = useState<'week' | 'month' | 'year'>('month');
@@ -180,11 +180,21 @@ export default function AdminPage({ user, users, products, categories, onSavePro
                     <th>Nombre</th>
                     <th>Correo</th>
                     <th>Rol</th>
-                    <th>Acción</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((account) => <tr key={account.id}><td>{account.nombre} {account.apellido}</td><td>{account.correo}</td><td>{account.role}</td><td><div className="table-actions"><button className="table-action btn btn-sm btn-outline-primary" type="button" onClick={() => setEditingUser(account)}>Editar</button><button className="table-action table-action--danger btn btn-sm btn-outline-danger" type="button" disabled={account.id === user.id || account.id.startsWith('demo-')} onClick={() => { if (window.confirm(`¿Eliminar la cuenta ${account.correo}?`)) onDeleteUser(account.id); }}>Eliminar</button></div></td></tr>)}
+                  {users.map((account) => <tr key={account.id}>
+                    <td>{account.nombre} {account.apellido}</td><td>{account.correo}</td><td>{account.role}</td>
+                    <td>{account.activo === false ? 'Desactivada' : 'Activa'}</td>
+                    <td><div className="table-actions">
+                      <button className="table-action btn btn-sm btn-outline-primary" type="button" onClick={() => setEditingUser(account)}>Editar</button>
+                      {account.activo === false
+                        ? <button className="table-action btn btn-sm btn-outline-success" type="button" onClick={() => onActivateUser(account.id)}>Reactivar</button>
+                        : <button className="table-action table-action--danger btn btn-sm btn-outline-danger" type="button" disabled={account.id === user.id} onClick={() => { if (window.confirm(`¿Desactivar la cuenta ${account.correo}?`)) onDeleteUser(account.id); }}>Desactivar</button>}
+                    </div></td>
+                  </tr>)}
                 </tbody>
               </table>
             </div>
@@ -198,7 +208,6 @@ export default function AdminPage({ user, users, products, categories, onSavePro
               if (!name || name === category) return;
               if (categories.some((item) => item.toLowerCase() === name.toLowerCase())) { notify('Ya existe una categoría con ese nombre.', 'error'); return; }
               onSaveCategories(categories.map((item) => item === category ? name : item));
-              onSaveProducts(products.map((product) => product.categoria === category ? { ...product, categoria: name } : product));
             }}>Editar</button><button className="table-action table-action--danger btn btn-sm btn-outline-danger" type="button"
             onClick={() => {
               if (products.some((product) => product.categoria === category)) { notify('Primero cambia de categoría los productos asociados.', 'error'); return; }

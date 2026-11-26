@@ -64,10 +64,10 @@ function AppRoutes() {
           products={store.products}
           categories={store.categories}
           onSaveProduct={store.saveManagedProduct}
-          onSaveProducts={store.setProducts}
           onDeleteProduct={store.deleteManagedProduct}
           onSaveUser={store.saveManagedUser}
           onDeleteUser={store.deleteManagedUser}
+          onActivateUser={store.activateManagedUser}
           onSaveCategories={store.saveManagedCategories}
           orders={store.orders}
           report={store.report}

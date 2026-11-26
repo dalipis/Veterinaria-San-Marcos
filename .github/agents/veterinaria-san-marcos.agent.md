@@ -23,7 +23,7 @@ Eres especialista en frontend y desarrollo integral del proyecto académico Vete
 - Las rutas y páginas reales están en `src/pages/`; los componentes compartidos están en `src/components/`, `src/layout/` y `src/ui/`.
 - El estado compartido está en `src/contexts/`; las operaciones HTTP están centralizadas en `src/services/api.ts`.
 - Los datos de negocio deben provenir de la API REST configurada con `VITE_API_URL`; no reutilices `localStorage` como base de datos.
-- La sesión puede persistir de forma controlada en `sessionStorage`, pero los tokens deben provenir y renovarse desde el backend.
+- Mantén el usuario solo en el estado de React; los tokens de sesión se gestionan mediante cookies `HttpOnly` del backend y nunca en Web Storage.
 - Existen roles de administrador, vendedor y cliente.
 - Los estilos activos están en `src/styles/`; conserva Bootstrap y los estilos existentes.
 - `legacy/` contiene una implementación HTML/JavaScript archivada que no forma parte de la compilación activa.
@@ -50,6 +50,7 @@ Eres especialista en frontend y desarrollo integral del proyecto académico Vete
 - Mantén datos sensibles fuera de la lógica real de autenticación y pagos.
 - El checkout es una simulación local: no recopiles ni almacenes datos reales de tarjetas.
 - No presentes el prototipo de `localStorage` como seguridad de producción.
+- Para las solicitudes mutables, conserva `credentials: 'include'` y el token CSRF gestionado por el cliente REST.
 - Conserva las credenciales y datos de prueba existentes salvo que se soliciten cambios.
 
 ## Restricciones

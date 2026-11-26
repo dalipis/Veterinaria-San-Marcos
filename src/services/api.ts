@@ -6,287 +6,359 @@ import type {
   CheckoutResult,
   Order,
   Product,
+  Role,
   User,
 } from '../types';
-import { initialProducts } from '../data/products';
-import { defaultCategories } from '../constants';
 
-const API_URL = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') ?? '';
-const SESSION_KEY = 'vsm_auth_session';
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8080').replace(/\/$/, '');
+const API_PREFIX = '/api/v1';
+const AUTH_PATHS_WITHOUT_REFRESH = ['/auth/login', '/auth/registro', '/auth/refresh'];
+let csrfRequest: Promise<string> | null = null;
+let refreshRequest: Promise<void> | null = null;
+let sessionExpiredHandler: (() => void) | null = null;
 
-export function getStoredSession(): AuthSession | null {
-  try {
-    const raw = sessionStorage.getItem(SESSION_KEY);
-    return raw ? JSON.parse(raw) as AuthSession : null;
-  } catch {
-    return null;
+interface ApiUser {
+  id: string;
+  nombre: string;
+  apellido: string;
+  fechaNacimiento?: string;
+  correo: string;
+  direccion?: string;
+  region?: string;
+  genero?: string;
+  role: string;
+  compras?: ApiOrder[];
+  intentosFallidos?: number;
+  bloqueado?: boolean;
+  activo?: boolean;
+}
+
+interface ApiOrder {
+  idOrden: string;
+  fecha: string;
+  direccionEntrega: string;
+  regionEntrega: string;
+  tipoEntrega: Order['tipoEntrega'];
+  metodoPago: Order['metodoPago'];
+  estado: string;
+  items: Order['items'];
+  total: number;
+}
+
+interface ApiCategory {
+  id: string;
+  nombre: string;
+}
+
+interface ApiReport {
+  periodo: string;
+  totalOperaciones: number;
+  montoTotal: number;
+  unidadesVendidas: number;
+  productosMasSolicitados: { productoId: string; nombre: string; cantidad: number; monto: number }[];
+}
+
+const ORDER_STATES: Record<string, Order['estado']> = {
+  confirmado: 'confirmado',
+  preparando: 'procesando',
+  despachado: 'procesando',
+  entregado: 'entregado',
+  cancelado: 'cancelado',
+};
+
+function mapOrder(order: ApiOrder): Order {
+  const estado = ORDER_STATES[order.estado];
+  if (!estado) throw new Error(`El backend devolvió un estado de compra no reconocido: ${order.estado}`);
+  return { ...order, estado };
+}
+
+function mapRole(role: string): Role {
+  const normalized = role.toLowerCase();
+  if (normalized === 'administrador' || normalized === 'vendedor' || normalized === 'cliente') return normalized;
+  throw new Error(`El backend devolvió un rol no reconocido: ${role}`);
+}
+
+function mapUser(user: ApiUser): User {
+  return {
+    id: user.id,
+    nombre: user.nombre,
+    apellido: user.apellido,
+    fechaNacimiento: user.fechaNacimiento ?? '',
+    correo: user.correo,
+    password: '',
+    direccion: user.direccion ?? '',
+    region: user.region ?? '',
+    genero: user.genero ?? '',
+    role: mapRole(user.role),
+    compras: (user.compras ?? []).map(mapOrder),
+    intentosFallidos: user.intentosFallidos ?? 0,
+    bloqueado: user.bloqueado ?? false,
+    activo: user.activo ?? true,
+  };
+}
+
+class ApiRequestError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message);
   }
 }
 
-export function saveSession(session: AuthSession | null): void {
-  if (session) sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
-  else sessionStorage.removeItem(SESSION_KEY);
+export function setSessionExpiredHandler(handler: () => void): void {
+  sessionExpiredHandler = handler;
 }
 
-export function clearSession(): void {
-  sessionStorage.removeItem(SESSION_KEY);
+async function getCsrfToken(): Promise<string> {
+  if (!csrfRequest) {
+    csrfRequest = fetch(`${API_URL}${API_PREFIX}/auth/csrf`, { credentials: 'include' })
+      .then(async (response) => {
+        if (!response.ok) throw new ApiRequestError('No fue posible preparar la sesión segura.', response.status);
+        const body = await response.json() as { token: string };
+        return body.token;
+      })
+      .finally(() => { csrfRequest = null; });
+  }
+  return csrfRequest;
 }
 
-async function apiRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const session = getStoredSession();
+function refreshSessionCookie(): Promise<void> {
+  if (!refreshRequest) {
+    refreshRequest = apiRequest<ApiUser>('/auth/refresh', { method: 'POST' }, false)
+      .then(() => undefined)
+      .finally(() => { refreshRequest = null; });
+  }
+  return refreshRequest;
+}
+
+async function apiRequest<T>(
+  path: string,
+  options: RequestInit = {},
+  allowRefresh = true,
+  retryCsrf = true,
+): Promise<T> {
   const headers = new Headers(options.headers);
   if (!headers.has('Content-Type') && options.body) headers.set('Content-Type', 'application/json');
-  if (session?.accessToken) headers.set('Authorization', `Bearer ${session.accessToken}`);
+  const method = (options.method ?? 'GET').toUpperCase();
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) headers.set('X-XSRF-TOKEN', await getCsrfToken());
 
-  const response = await fetch(`${API_URL}${path}`, { ...options, headers });
-  if (!response.ok) {
-    let message = 'No fue posible completar la solicitud.';
+  const response = await fetch(`${API_URL}${API_PREFIX}${path}`, {
+    ...options,
+    headers,
+    credentials: 'include',
+  });
+
+  if (response.status === 403 && path === '/auth/login' && retryCsrf) {
+    return apiRequest<T>(path, options, allowRefresh, false);
+  }
+
+  if (response.status === 401 && allowRefresh
+      && !AUTH_PATHS_WITHOUT_REFRESH.some((authPath) => path.startsWith(authPath))) {
     try {
-      const body = await response.json() as { message?: string };
-      if (body.message) message = body.message;
-    } catch {
-      // Keep the default HTTP error message.
+      await refreshSessionCookie();
+      return apiRequest<T>(path, options, false);
+    } catch (refreshError) {
+      if (!(refreshError instanceof ApiRequestError) || refreshError.status !== 401) throw refreshError;
+      sessionExpiredHandler?.();
     }
-    throw new Error(message);
+  }
+  if (!response.ok) {
+    let message = `La solicitud falló (${response.status}).`;
+    try {
+      const body = await response.json() as { error?: string; message?: string };
+      message = body.error ?? body.message ?? message;
+    } catch {
+      // Some HTTP errors, such as a proxy failure, do not include a JSON body.
+    }
+    throw new ApiRequestError(message, response.status);
   }
   if (response.status === 204) return undefined as T;
   return response.json() as Promise<T>;
 }
 
-let mockProducts = initialProducts.map((product) => ({ ...product }));
-let mockCategories = [...defaultCategories];
-let mockUsers: User[] = [
-  { id: 'demo-admin', nombre: 'Admin', apellido: 'San Marcos', correo: 'admin@duoc.cl', password: '', role: 'administrador', fechaNacimiento: '', direccion: '', region: '', genero: '', compras: [], intentosFallidos: 0, bloqueado: false },
-  { id: 'demo-vendedor', nombre: 'Vendedor', apellido: 'San Marcos', correo: 'vendedor@duoc.cl', password: '', role: 'vendedor', fechaNacimiento: '', direccion: '', region: '', genero: '', compras: [], intentosFallidos: 0, bloqueado: false },
-];
-let mockOrders: Order[] = [];
-
-function createId(prefix: string): string {
-  return `${prefix}-${globalThis.crypto?.randomUUID?.() ?? Date.now().toString(36)}`;
+async function loadCategories(): Promise<ApiCategory[]> {
+  return apiRequest<ApiCategory[]>('/categorias');
 }
 
-function makeSession(user: User): AuthSession {
+async function loadUsers(): Promise<User[]> {
+  return (await apiRequest<ApiUser[]>('/usuarios')).map(mapUser);
+}
+
+async function loadOrders(): Promise<Order[]> {
+  return (await apiRequest<ApiOrder[]>('/compras')).map(mapOrder);
+}
+
+function userRequest(account: User) {
   return {
-    accessToken: `demo-access-${createId('token')}`,
-    refreshToken: `demo-refresh-${createId('token')}`,
-    expiresAt: Date.now() + 30 * 60 * 1000,
-    user,
+    nombre: account.nombre,
+    apellido: account.apellido,
+    fechaNacimiento: account.fechaNacimiento,
+    correo: account.correo,
+    password: account.password,
+    direccion: account.direccion,
+    region: account.region,
+    genero: account.genero,
+    role: account.role,
   };
 }
 
 export const api = {
-  isConfigured: Boolean(API_URL),
-
   async bootstrap() {
-    if (API_URL) {
-      const [products, categories] = await Promise.all([
-        apiRequest<Product[]>('/api/products'),
-        apiRequest<string[]>('/api/categories'),
-      ]);
-      return { products, categories };
-    }
-    return { products: mockProducts, categories: mockCategories };
+    const [products, categories] = await Promise.all([
+      apiRequest<Product[]>('/productos'),
+      loadCategories(),
+    ]);
+    return { products, categories: categories.map((category) => category.nombre) };
   },
 
   async login(email: string, password: string): Promise<AuthSession> {
-    if (API_URL) {
-      const session = await apiRequest<AuthSession>('/api/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
-      });
-      saveSession(session);
-      return session;
-    }
-    const demoPasswords: Record<string, string> = { 'admin@duoc.cl': 'Admin123', 'vendedor@duoc.cl': 'Vendedor123' };
-    const user = mockUsers.find((account) => account.correo.toLowerCase() === email.toLowerCase());
-    if (!user) throw new Error('No existe una cuenta registrada con este correo.');
-    if (demoPasswords[email] !== password) throw new Error('Credenciales incorrectas.');
-    const session = makeSession(user);
-    saveSession(session);
-    return session;
+    const user = await apiRequest<ApiUser>('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ correo: email, password }),
+    });
+    return { user: mapUser(user) };
   },
 
   async register(details: Omit<User, 'id' | 'role' | 'compras' | 'intentosFallidos' | 'bloqueado'>): Promise<User> {
-    if (API_URL) return apiRequest<User>('/api/auth/register', { method: 'POST', body: JSON.stringify(details) });
-    if (mockUsers.some((account) => account.correo.toLowerCase() === details.correo.toLowerCase())) throw new Error('Ya existe una cuenta registrada con ese correo.');
-    const user: User = { ...details, id: createId('usr'), role: 'cliente', compras: [], intentosFallidos: 0, bloqueado: false };
-    mockUsers = [...mockUsers, user];
-    return user;
+    const response = await apiRequest<ApiUser>('/auth/registro', {
+      method: 'POST',
+      body: JSON.stringify({ ...details, role: 'cliente' }),
+    });
+    return mapUser(response);
   },
 
   async refreshSession(): Promise<AuthSession | null> {
-    const session = getStoredSession();
-    if (!session) return null;
-    if (session.expiresAt > Date.now()) return session;
-    if (API_URL) {
-      const refreshed = await apiRequest<AuthSession>('/api/auth/refresh', {
-        method: 'POST',
-        body: JSON.stringify({ refreshToken: session.refreshToken }),
-      });
-      saveSession(refreshed);
-      return refreshed;
+    try {
+      return { user: mapUser(await apiRequest<ApiUser>('/auth/me')) };
+    } catch (error) {
+      if (error instanceof ApiRequestError && error.status === 401) return null;
+      throw error;
     }
-    const refreshed = { ...session, accessToken: `demo-access-${createId('token')}`, expiresAt: Date.now() + 30 * 60 * 1000 };
-    saveSession(refreshed);
-    return refreshed;
   },
 
   async logout(): Promise<void> {
-    if (API_URL) {
-      try { await apiRequest<void>('/api/auth/logout', { method: 'POST' }); } catch { /* Local logout must always complete. */ }
-    }
-    clearSession();
+    await apiRequest<void>('/auth/logout', { method: 'POST' });
   },
 
-  async getUsers(): Promise<User[]> {
-    return API_URL ? apiRequest<User[]>('/api/users') : mockUsers;
-  },
+  getUsers: loadUsers,
 
-  async saveUser(account: User): Promise<User[]> {
-    if (API_URL) {
-      const saved = account.id
-        ? await apiRequest<User>(`/api/users/${account.id}`, { method: 'PUT', body: JSON.stringify(account) })
-        : await apiRequest<User>('/api/users', { method: 'POST', body: JSON.stringify(account) });
-      return apiRequest<User[]>('/api/users').then((users) => users.map((user) => user.id === saved.id ? saved : user));
-    }
-    mockUsers = account.id
-      ? mockUsers.map((item) => item.id === account.id ? account : item)
-      : [...mockUsers, { ...account, id: createId('usr') }];
-    return mockUsers;
+  async saveUser(account: User, actorRole: Role): Promise<User[]> {
+    await (account.id
+      ? apiRequest<ApiUser>(`/usuarios/${encodeURIComponent(account.id)}`, {
+        method: 'PUT',
+        body: JSON.stringify(userRequest(account)),
+      })
+      : apiRequest<ApiUser>('/usuarios', {
+        method: 'POST',
+        body: JSON.stringify(userRequest(account)),
+      }));
+    return actorRole === 'administrador' ? loadUsers() : [];
   },
 
   async deleteUser(id: string): Promise<User[]> {
-    if (API_URL) {
-      await apiRequest<void>(`/api/users/${id}`, { method: 'DELETE' });
-      return apiRequest<User[]>('/api/users');
-    }
-    mockUsers = mockUsers.filter((account) => account.id !== id);
-    return mockUsers;
+    await apiRequest<void>(`/usuarios/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    return loadUsers();
+  },
+
+  async activateUser(id: string): Promise<User[]> {
+    await apiRequest<ApiUser>(`/usuarios/${encodeURIComponent(id)}/activar`, { method: 'POST' });
+    return loadUsers();
   },
 
   async saveProfile(account: User): Promise<User> {
-    if (API_URL) return apiRequest<User>(`/api/users/${account.id}`, { method: 'PUT', body: JSON.stringify(account) });
-    mockUsers = mockUsers.map((item) => item.id === account.id ? account : item);
-    return account;
+    return mapUser(await apiRequest<ApiUser>('/auth/perfil', {
+      method: 'PUT',
+      body: JSON.stringify(userRequest(account)),
+    }));
   },
 
-  async saveProduct(product: Product): Promise<Product[]> {
-    if (API_URL) {
-      await apiRequest<Product>(product.id ? `/api/products/${product.id}` : '/api/products', {
+  async saveProduct(product: Product, actorRole: Role): Promise<Product[]> {
+    if (actorRole === 'vendedor') {
+      await apiRequest<Product>(`/productos/${encodeURIComponent(product.id)}/stock`, {
+        method: 'PATCH',
+        body: JSON.stringify({ stock: product.stock }),
+      });
+    } else {
+      await apiRequest<Product>(product.id
+        ? `/productos/${encodeURIComponent(product.id)}`
+        : '/productos', {
         method: product.id ? 'PUT' : 'POST',
         body: JSON.stringify(product),
       });
-      return apiRequest<Product[]>('/api/products');
     }
-    mockProducts = product.id
-      ? mockProducts.map((item) => item.id === product.id ? product : item)
-      : [...mockProducts, { ...product, id: product.id || createId('prod') }];
-    return mockProducts;
+    return apiRequest<Product[]>('/productos');
   },
 
   async deleteProduct(id: string): Promise<Product[]> {
-    if (API_URL) {
-      await apiRequest<void>(`/api/products/${id}`, { method: 'DELETE' });
-      return apiRequest<Product[]>('/api/products');
-    }
-    mockProducts = mockProducts.filter((product) => product.id !== id);
-    return mockProducts;
+    await apiRequest<void>(`/productos/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    return apiRequest<Product[]>('/productos');
   },
 
   async saveCategories(categories: string[]): Promise<string[]> {
-    if (API_URL) {
-      await apiRequest<void>('/api/categories', { method: 'PUT', body: JSON.stringify({ categories }) });
-      return apiRequest<string[]>('/api/categories');
+    const current = await loadCategories();
+    const desiredNames = new Set(categories.map((name) => name.toLowerCase()));
+    const currentNames = new Set(current.map((category) => category.nombre.toLowerCase()));
+    const renamedFrom = current.filter((category) => !desiredNames.has(category.nombre.toLowerCase()));
+    const renamedTo = categories.filter((name) => !currentNames.has(name.toLowerCase()));
+
+    if (renamedFrom.length && renamedFrom.length === renamedTo.length) {
+      await Promise.all(renamedFrom.map((category, index) =>
+        apiRequest<ApiCategory>(`/categorias/${encodeURIComponent(category.id)}`, {
+          method: 'PUT',
+          body: JSON.stringify({ nombre: renamedTo[index] }),
+        })));
+    } else {
+      for (const name of renamedTo) {
+        await apiRequest<ApiCategory>('/categorias', {
+          method: 'POST',
+          body: JSON.stringify({ nombre: name }),
+        });
+      }
+      for (const category of renamedFrom) {
+        await apiRequest<void>(`/categorias/${encodeURIComponent(category.id)}`, { method: 'DELETE' });
+      }
     }
-    mockCategories = [...categories];
-    mockProducts = mockProducts.map((product) => mockCategories.includes(product.categoria) ? product : { ...product, categoria: mockCategories[0] ?? 'General' });
-    return mockCategories;
+    return (await loadCategories()).map((category) => category.nombre);
   },
 
-  async checkout(user: User, cart: CartItem[], details: CheckoutDetails): Promise<CheckoutResult> {
-    if (API_URL) return apiRequest<CheckoutResult>('/api/orders', { method: 'POST', body: JSON.stringify({ userId: user.id, items: cart, ...details }) });
-    const result = completeMockCheckout(user, cart, details);
-    if (result.order) {
-      mockOrders = [result.order, ...mockOrders];
-      mockUsers = mockUsers.map((account) => account.id === user.id ? { ...account, compras: [result.order!, ...account.compras] } : account);
-    }
-    return result;
+  async checkout(cart: CartItem[], details: CheckoutDetails): Promise<CheckoutResult> {
+    const order = await apiRequest<ApiOrder>('/compras', {
+      method: 'POST',
+      body: JSON.stringify({
+        items: cart.map((item) => ({ productoId: item.id, cantidad: item.cantidad })),
+        ...details,
+      }),
+    });
+    return {
+      estado: 'exitoso',
+      mensaje: `Tu pedido ${order.idOrden} fue confirmado.`,
+      order: mapOrder(order),
+      fecha: order.fecha,
+    };
   },
 
-  async getOrders(user: User): Promise<Order[]> {
-    if (API_URL) return apiRequest<Order[]>(`/api/orders/user/${user.id}`);
-    return mockOrders.filter((order) => mockUsers.find((account) => account.compras.some((item) => item.idOrden === order.idOrden))?.id === user.id);
+  async getOrders(): Promise<Order[]> {
+    return (await apiRequest<ApiOrder[]>('/compras/mias')).map(mapOrder);
   },
 
-  async getAllOrders(): Promise<Order[]> {
-    if (API_URL) return apiRequest<Order[]>('/api/orders');
-    return mockOrders;
-  },
+  getAllOrders: loadOrders,
 
   async updateOrderStatus(id: string, estado: Order['estado']): Promise<Order[]> {
-    if (API_URL) {
-      await apiRequest<Order>(`/api/orders/${id}/status`, { method: 'PATCH', body: JSON.stringify({ estado }) });
-      return apiRequest<Order[]>('/api/orders');
-    }
-    mockOrders = mockOrders.map((order) => order.idOrden === id ? { ...order, estado } : order);
-    return mockOrders;
+    const estadoApi = estado === 'procesando' ? 'preparando' : estado;
+    await apiRequest<ApiOrder>(
+      `/compras/${encodeURIComponent(id)}/estado?estado=${encodeURIComponent(estadoApi)}`,
+      { method: 'PATCH' },
+    );
+    return loadOrders();
   },
 
   async getReport(period: 'week' | 'month' | 'year' = 'month'): Promise<AdminReport> {
-    if (API_URL) return apiRequest<AdminReport>(`/api/reports/dashboard?period=${period}`);
-    return buildMockReport(period);
+    const periodoApi = period === 'week' ? 'semana' : period === 'year' ? 'ano' : 'mes';
+    const report = await apiRequest<ApiReport>(`/reportes?periodo=${periodoApi}`);
+    return {
+      totalOperaciones: report.totalOperaciones,
+      montoTotal: report.montoTotal,
+      productosVendidos: report.unidadesVendidas,
+      masSolicitados: report.productosMasSolicitados.map(({ nombre, cantidad }) => ({ nombre, cantidad })),
+      porPeriodo: [{ periodo: report.periodo, operaciones: report.totalOperaciones, monto: report.montoTotal }],
+    };
   },
 };
-
-function completeMockCheckout(user: User, cart: CartItem[], details: CheckoutDetails): CheckoutResult {
-  const fecha = new Date().toLocaleString('es-CL');
-  if (!cart.length) return { estado: 'fallido', mensaje: 'El carrito está vacío.', order: null, fecha };
-  if (cart.some((item) => {
-    const product = mockProducts.find((entry) => entry.id === item.id);
-    return !product || product.stock < item.cantidad;
-  })) return { estado: 'fallido', mensaje: 'El stock no alcanza para completar la compra.', order: null, fecha };
-  if (details.metodoPago === 'tarjeta' && details.numeroTarjeta.endsWith('0002')) {
-    return { estado: 'fallido', mensaje: 'El emisor rechazó el pago simulado.', order: null, fecha };
-  }
-  const items = cart.flatMap((item) => {
-    const product = mockProducts.find((entry) => entry.id === item.id);
-    if (!product) return [];
-    const precioUnitario = product.precioOferta && product.precioOferta < product.precio ? product.precioOferta : product.precio;
-    return [{ id: product.id, nombre: product.nombre, cantidad: item.cantidad, precioUnitario, subtotal: precioUnitario * item.cantidad }];
-  });
-  mockProducts = mockProducts.map((product) => {
-    const item = cart.find((entry) => entry.id === product.id);
-    return item ? { ...product, stock: product.stock - item.cantidad } : product;
-  });
-  const order: Order = {
-    idOrden: `ORD-${Date.now()}`,
-    fecha,
-    direccionEntrega: details.tipoEntrega === 'retiro' ? 'Retiro en clínica' : details.direccionEntrega,
-    regionEntrega: details.tipoEntrega === 'retiro' ? "Libertador General Bernardo O'Higgins" : details.regionEntrega,
-    tipoEntrega: details.tipoEntrega,
-    metodoPago: details.metodoPago,
-    estado: 'confirmado',
-    items,
-    total: items.reduce((sum, item) => sum + item.subtotal, 0),
-  };
-  void user;
-  return { estado: 'exitoso', mensaje: `Tu pedido ${order.idOrden} fue confirmado.`, order, fecha };
-}
-
-function buildMockReport(period: 'week' | 'month' | 'year'): AdminReport {
-  const operations = mockOrders;
-  const totals = operations.reduce((summary, order) => ({
-    monto: summary.monto + order.total,
-    productos: summary.productos + order.items.reduce((sum, item) => sum + item.cantidad, 0),
-  }), { monto: 0, productos: 0 });
-  const sales = new Map<string, number>();
-  operations.forEach((order) => order.items.forEach((item) => sales.set(item.nombre, (sales.get(item.nombre) ?? 0) + item.cantidad)));
-  const masSolicitados = [...sales.entries()].map(([nombre, cantidad]) => ({ nombre, cantidad })).sort((a, b) => b.cantidad - a.cantidad).slice(0, 5);
-  return {
-    totalOperaciones: operations.length,
-    montoTotal: totals.monto,
-    productosVendidos: totals.productos,
-    masSolicitados,
-    porPeriodo: [{ periodo: period, operaciones: operations.length, monto: totals.monto }],
-  };
-}

@@ -1,6 +1,6 @@
 # Veterinaria San Marcos
 
-Tienda académica construida con React 19, TypeScript, Vite y React Router. Las páginas y el panel comparten estado y datos persistidos en `localStorage`.
+Tienda académica construida con React 19, TypeScript, Vite y React Router. Los datos del catálogo, usuarios y compras provienen de la API Spring Boot; la sesión se mantiene en memoria y se autentica con cookies `HttpOnly`.
 
 ## Desarrollo
 
@@ -20,12 +20,11 @@ npm run build
 - `src/pages/`: una página por archivo, incluyendo catálogo, login, perfil y panel.
 - `src/components/`: guards para rutas con sesión y permisos de personal.
 - `src/layout/`: navbar, layout de página, footer, carrito, historial y scroll.
-- `src/contexts/`: estado compartido de productos, sesión, carrito y notificaciones.
+- `src/contexts/`: estado en memoria compartido de productos, sesión, carrito y notificaciones.
 - `src/ui/`: piezas visuales reutilizables, como las tarjetas y el detalle del producto.
-- `src/services/`: lectura y escritura centralizadas en `localStorage`.
+- `src/services/`: cliente REST, adaptación de respuestas y renovación segura de sesión.
 - `src/constants/`, `src/data/`, `src/utils/` y `src/types/`: opciones, catálogo inicial, formato y tipos de dominio.
 - `src/styles/`: estilos activos de la interfaz, incluidos los estilos heredados que se mantienen en uso.
-- `legacy/`: páginas HTML y scripts de la implementación anterior, archivados y fuera de la compilación.
 - `config/`: configuraciones de Vite y TypeScript.
 - `public/images/`: imágenes estáticas servidas directamente por Vite.
 - `docs/requisitos/`: pauta, anexo, instrumento y planilla entregados para el proyecto.
@@ -53,15 +52,15 @@ Las rutas antiguas con extensión `.html` se conservan dentro de React Router pa
 - Cliente: navega el catálogo y realiza compras.
 - Cualquier usuario registrado en el flujo público recibe el rol cliente.
 
-Para probar el panel localmente: `admin@duoc.cl` / `Admin123` o `vendedor@duoc.cl` / `Vendedor123`. Las cuentas se crean automáticamente si no existen. Los datos de prueba y credenciales se guardan solo en el navegador; este prototipo no implementa seguridad de producción.
+Para probar el panel localmente: `admin@duoc.cl` / `Admin123` o `vendedor@duoc.cl` / `Vendedor123`. El backend crea cuentas de demostración al iniciar cuando el seed está habilitado.
 
 ## Integración con backend
 
 El frontend está preparado para consumir una API REST mediante `src/services/api.ts`.
 
-1. Copia `.env.example` como `.env`.
-2. Configura `VITE_API_URL` con la URL pública o local del backend Spring Boot.
+1. Inicia el backend Spring Boot con MariaDB y configura `JWT_SECRET`.
+2. Copia `.env.example` como `.env` y configura `VITE_API_URL` con la URL base del backend (por defecto `http://localhost:8080`).
 3. Reinicia Vite después de cambiar la variable.
-4. Implementa los endpoints usados por `api.ts`: autenticación, usuarios, productos, categorías, pedidos, reportes y renovación de sesión.
+4. El frontend consume `/api/v1` para autenticación, usuarios, productos, categorías, compras, reportes y renovación de sesión. El backend debe permitir credenciales para el origen del frontend.
 
-Sin `VITE_API_URL`, la aplicación usa temporalmente datos simulados en memoria. Esta simulación no persiste productos, usuarios ni compras al recargar y no reemplaza un backend seguro.
+No hay modo simulado: si el backend no está disponible, la interfaz muestra el error de conexión en vez de usar datos ficticios. El access token y el refresh token se guardan en cookies `HttpOnly`; el frontend recupera la sesión desde `/auth/me` y no almacena tokens en Web Storage. Las solicitudes mutables incluyen protección CSRF. Para despliegues HTTPS, configura `COOKIE_SECURE=true` en el backend. El carrito permanece en memoria.
