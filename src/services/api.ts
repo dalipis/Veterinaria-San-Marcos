@@ -50,6 +50,8 @@ interface ApiCategory {
   nombre: string;
 }
 
+type ApiProduct = Omit<Product, 'precioOferta'> & { precioOferta: number | null };
+
 interface ApiReport {
   periodo: string;
   totalOperaciones: number;
@@ -95,6 +97,10 @@ function mapUser(user: ApiUser): User {
     bloqueado: user.bloqueado ?? false,
     activo: user.activo ?? true,
   };
+}
+
+function mapProduct(product: ApiProduct): Product {
+  return { ...product, precioOferta: product.precioOferta ?? undefined };
 }
 
 class ApiRequestError extends Error {
@@ -203,10 +209,10 @@ function userRequest(account: User) {
 export const api = {
   async bootstrap() {
     const [products, categories] = await Promise.all([
-      apiRequest<Product[]>('/productos'),
+      apiRequest<ApiProduct[]>('/productos'),
       loadCategories(),
     ]);
-    return { products, categories: categories.map((category) => category.nombre) };
+    return { products: products.map(mapProduct), categories: categories.map((category) => category.nombre) };
   },
 
   async login(email: string, password: string): Promise<AuthSession> {
@@ -272,24 +278,24 @@ export const api = {
 
   async saveProduct(product: Product, actorRole: Role): Promise<Product[]> {
     if (actorRole === 'vendedor') {
-      await apiRequest<Product>(`/productos/${encodeURIComponent(product.id)}/stock`, {
+      await apiRequest<ApiProduct>(`/productos/${encodeURIComponent(product.id)}/stock`, {
         method: 'PATCH',
         body: JSON.stringify({ stock: product.stock }),
       });
     } else {
-      await apiRequest<Product>(product.id
+      await apiRequest<ApiProduct>(product.id
         ? `/productos/${encodeURIComponent(product.id)}`
         : '/productos', {
         method: product.id ? 'PUT' : 'POST',
         body: JSON.stringify(product),
       });
     }
-    return apiRequest<Product[]>('/productos');
+    return (await apiRequest<ApiProduct[]>('/productos')).map(mapProduct);
   },
 
   async deleteProduct(id: string): Promise<Product[]> {
     await apiRequest<void>(`/productos/${encodeURIComponent(id)}`, { method: 'DELETE' });
-    return apiRequest<Product[]>('/productos');
+    return (await apiRequest<ApiProduct[]>('/productos')).map(mapProduct);
   },
 
   async saveCategories(categories: string[]): Promise<string[]> {
